@@ -1,0 +1,29 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  base: './',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          const timestamp = Date.now();
+          const ext = assetInfo.name.split('.').pop();
+          return `assets/[name]-${timestamp}.${ext}`;
+        },
+        chunkFileNames: () => {
+          const timestamp = Date.now();
+          return `assets/[name]-${timestamp}.js`;
+        },
+        entryFileNames: () => {
+          const timestamp = Date.now();
+          return `assets/[name]-${timestamp}.js`;
+        }
+      }
+    }
+  }
+})

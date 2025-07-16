@@ -1,0 +1,827 @@
+.phase2-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.phase2-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+
+
+.phase2-title {
+  margin-bottom: 20px;
+}
+
+.phase2-title h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.phase2-title p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.phase2-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.stat {
+  text-align: center;
+  padding: 16px 24px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.stat-number {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  color: #007bff;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phase2-content {
+  margin-bottom: 30px;
+}
+
+.tweets-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.tweet-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tweet-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.tweet-card.declined {
+  background-color: #fff5f5;
+  border-color: #fed7d7;
+  opacity: 0.7;
+}
+
+.tweet-card.declined::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(254, 215, 215, 0.3);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.tweet-header {
+  margin-bottom: 12px;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 2;
+  gap: 8px;
+}
+
+.tweet-meta-row {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.tweet-meta-row.first-row {
+  grid-template-columns: 20% 20% 10% 50%;
+  align-items: start;
+}
+
+.tweet-meta-row.second-row {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.pmid {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  padding: 2px 6px;
+  border-right: 1px solid #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.doi {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  padding: 2px 6px;
+  border-right: 1px solid #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.doi a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.doi a:hover {
+  text-decoration: underline;
+}
+
+.journal {
+  font-size: 12px;
+  font-weight: 600;
+  color: #007bff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+  margin: 0;
+  border-right: 1px solid #e0e0e0;
+}
+
+.score {
+  font-size: 12px;
+  font-weight: 600;
+  color: #28a745;
+  background-color: #f8fff9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #d4edda;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin: 0;
+  /* max-width: 100px; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.date {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.cancer-type {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cancer-type:hover {
+  background-color: #bbdefb;
+}
+
+.cancer-tag-edit {
+  display: inline-block;
+}
+
+.cancer-tag-input {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border: 1px solid #1976d2;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 80px;
+}
+
+.tweet-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 12px 0;
+}
+
+/* Tags Section */
+.tweet-main-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.tags-section {
+  margin-bottom: 16px;
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.tags-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tags-row:last-child {
+  margin-bottom: 0;
+}
+
+.tags-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  min-width: 60px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tags-content {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  flex: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.tags-content:hover {
+  background-color: #f0f0f0;
+}
+
+.tags-input {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  flex: 1;
+  padding: 2px 4px;
+  border: 1px solid #007bff;
+  border-radius: 3px;
+  background-color: white;
+}
+
+.date {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  margin: 0;
+  border-right: 1px solid #e0e0e0;
+}
+
+.score {
+  font-size: 12px;
+  font-weight: 600;
+  color: #28a745;
+  background-color: #f8fff9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #d4edda;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.tweet-score {
+  font-size: 12px;
+  font-weight: 600;
+  color: #28a745;
+  background-color: #f8fff9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d4edda;
+}
+
+.tweet-content {
+  margin-bottom: 0;
+}
+
+.tweet-section {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.tweet-section-content {
+  position: relative;
+  cursor: pointer !important;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.tweet-section-content:hover {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+}
+
+.tweet-section-content:hover::after {
+  content: 'Right-click or Ctrl+click to edit';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+  font-weight: 500;
+}
+
+.tweet-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tweet-text {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.tweet-edit {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.tweet-edit-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: inherit;
+  background-color: white;
+  color: #333;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tweet-edit-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.save-button, .cancel-button, .edit-button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.save-button:hover {
+  background-color: #218838;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.edit-button {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
+}
+
+.tweet-details {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #666;
+}
+
+.cancer-type {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  display: inline-block;
+}
+
+.cancer-type:hover {
+  background-color: #bbdefb;
+}
+
+.cancer-tag-edit {
+  display: inline-block;
+}
+
+.cancer-tag-input {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border: 1px solid #1976d2;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 80px;
+}
+
+/* Summary Section */
+.summary-section {
+  margin-bottom: 16px;
+}
+
+.summary-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-content {
+  position: relative;
+}
+
+.summary-text {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary-text.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.expand-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.expand-button:hover {
+  color: #0056b3;
+}
+
+/* Abstract Section */
+.abstract-section {
+  margin-bottom: 16px;
+}
+
+.abstract-toggle {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.abstract-toggle:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.abstract-content {
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.abstract-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.tweet-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.decline-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.decline-button:hover {
+  background-color: #c82333;
+}
+
+.accept-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.accept-button:hover {
+  background-color: #218838;
+}
+
+.undecline-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.undecline-button:hover {
+  background-color: #218838;
+}
+
+/* Content Selection */
+.content-selection {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.content-selection h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.content-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.content-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.content-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.phase2-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footer-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+
+
+.no-tweets {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.no-tweets h3 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.no-tweets p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Modal Styles */
+.tweet-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.tweet-modal {
+  background-color: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.modal-tweet,
+.modal-summary,
+.modal-abstract {
+  margin-bottom: 20px;
+}
+
+.modal-tweet h4,
+.modal-summary h4,
+.modal-abstract h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-tweet p,
+.modal-summary p,
+.modal-abstract p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.modal-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.meta-item {
+  font-size: 12px;
+  color: #666;
+}
+
+.meta-item strong {
+  color: #333;
+} 
