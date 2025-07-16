@@ -286,6 +286,33 @@ const Phase3ContentSelection = ({
     setIsSending(true);
     setSendStatus(null);
 
+    // Collect all accepted PMIDs (from all content types)
+    const acceptedPmids = [];
+    
+    // Add Twitter tweets
+    twitterTweets.forEach(tweet => {
+      if (!acceptedPmids.includes(tweet.pmid)) {
+        acceptedPmids.push(tweet.pmid);
+      }
+    });
+    
+    // Add Clinical Newsletter tweets
+    clinicalNewsletterTweets.forEach(tweet => {
+      if (!acceptedPmids.includes(tweet.pmid)) {
+        acceptedPmids.push(tweet.pmid);
+      }
+    });
+    
+    // Add Long Form Newsletter tweets
+    longFormNewsletterTweets.forEach(tweet => {
+      if (!acceptedPmids.includes(tweet.pmid)) {
+        acceptedPmids.push(tweet.pmid);
+      }
+    });
+    
+    // Collect declined PMIDs
+    const declinedPmids = declinedTweets.map(tweet => tweet.pmid);
+
     const dataToSend = {
       query: selectedQuery,
       timestamp: new Date().toISOString(),
@@ -361,6 +388,8 @@ const Phase3ContentSelection = ({
 
     try {
       console.log('ContentGen: Sending data to n8n:', dataToSend);
+      console.log('ContentGen: Accepted PMIDs:', acceptedPmids);
+      console.log('ContentGen: Declined PMIDs:', declinedPmids);
 
       // Check if WordPress environment is available
       if (window.contentgen_ajax && window.contentgen_ajax.ajax_url) {
@@ -374,7 +403,10 @@ const Phase3ContentSelection = ({
           body: new URLSearchParams({
             action: 'contentgen_send_to_n8n',
             nonce: window.contentgen_ajax.nonce,
-            data: JSON.stringify(dataToSend)
+            data: JSON.stringify(dataToSend),
+            accepted_pmids: JSON.stringify(acceptedPmids),
+            declined_pmids: JSON.stringify(declinedPmids),
+            delete_after_send: 'true'
           })
         });
 

@@ -3,7 +3,7 @@
  * Plugin Name: ContentGen - Research Tweet Manager
  * Plugin URI: https://yourdomain.com/contentgen
  * Description: A WordPress plugin for managing research tweets and content generation from n8n workflows with bidirectional data flow
- * Version: 1.9.8.2
+ * Version: 1.9.9
  * Author: Umang Sharma
  * License: GPL v2 or later
  * Text Domain: contentgen
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('CONTENTGEN_VERSION', '1.9.8.2');
+define('CONTENTGEN_VERSION', '1.9.9');
 define('CONTENTGEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CONTENTGEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
@@ -214,8 +214,8 @@ class ContentGen {
     
     public function enqueue_scripts() {
         // Load the built React application (static reference to latest build)
-        wp_enqueue_style('contentgen-styles', CONTENTGEN_PLUGIN_URL . 'assets/assets/index-1752630789497.css', array(), CONTENTGEN_VERSION);
-        wp_enqueue_script('contentgen-script', CONTENTGEN_PLUGIN_URL . 'assets/assets/index-1752630789451.js', array(), CONTENTGEN_VERSION, true);
+        wp_enqueue_style('contentgen-styles', CONTENTGEN_PLUGIN_URL . 'assets/assets/index-1752703313223.css', array(), CONTENTGEN_VERSION);
+        wp_enqueue_script('contentgen-script', CONTENTGEN_PLUGIN_URL . 'assets/assets/index-1752703313184.js', array(), CONTENTGEN_VERSION, true);
 
         wp_localize_script('contentgen-script', 'contentgen_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -481,10 +481,13 @@ class ContentGen {
         wp_send_json_success($data);
     }
     
+
+
     public function export_tweets() {
         check_ajax_referer('contentgen_nonce', 'nonce');
         
         $tweets = json_decode(stripslashes($_POST['tweets']), true);
+        error_log('ContentGen: tweets data = ' . print_r($tweets, true));
         
         if (!$tweets || !is_array($tweets)) {
             wp_send_json_error('Invalid tweets data');
@@ -494,25 +497,30 @@ class ContentGen {
         $accepted_table = $wpdb->prefix . 'contentgen_accepted_tweets';
         $research_table = $wpdb->prefix . 'contentgen_research_data';
         
-        $wpdb->query('START TRANSACTION');
+        // $wpdb->query('START TRANSACTION');
         
         try {
             foreach ($tweets as $tweet) {
-                // Insert into accepted tweets
-                $wpdb->insert($accepted_table, array(
-                    'pmid' => sanitize_text_field($tweet['pmid']),
-                    'tweet' => sanitize_textarea_field($tweet['tweet'])
-                ));
+                // $wpdb->insert($accepted_table, array(
+                //     'pmid' => sanitize_text_field($tweet['pmid']),
+                //     'tweet' => sanitize_textarea_field($tweet['tweet'])
+                // ));
                 
-                // Update status in research data
-                $wpdb->update(
-                    $research_table,
-                    array('status' => 'accepted'),
-                    array('pmid' => $tweet['pmid'])
-                );
+                // Delete from research data using direct SQL
+                $pmid = (int)$tweet['pmid'];
+                $sql = $wpdb->prepare("DELETE FROM $research_table WHERE pmid = %d", $pmid);
+                $result = $wpdb->query($sql);
+                
+                if ($result === false) {
+                    error_log('Delete failed for pmid: ' . $tweet['pmid'] . ' - Last error: ' . $wpdb->last_error);
+                } else {
+                    error_log('Delete result for pmid ' . $tweet['pmid'] . ': ' . $result . ' rows affected');
+                }
+
+                $this->log_webhook_data("Deleted from research data: " . $tweet['pmid']);
             }
             
-            $wpdb->query('COMMIT');
+            // $wpdb->query('COMMIT');
             
             // Send to n8n if configured
             $this->send_accepted_tweets_to_n8n($tweets);
@@ -520,7 +528,7 @@ class ContentGen {
             wp_send_json_success('Tweets exported successfully');
             
         } catch (Exception $e) {
-            $wpdb->query('ROLLBACK');
+            // $wpdb->query('ROLLBACK');
             wp_send_json_error('Failed to export tweets: ' . $e->getMessage());
         }
     }
@@ -571,22 +579,31 @@ class ContentGen {
     }
     
     public function send_to_n8n() {
+        $this->log_webhook_data('ContentGen: send_to_n8n function called');
+        $this->log_webhook_data('ContentGen: POST data = ' . print_r($_POST, true));
+        
         check_ajax_referer('contentgen_nonce', 'nonce');
         
         // Handle both old format (data_type, data_content) and new format (data)
         if (isset($_POST['data'])) {
             // New format from React component
-            // $data_content = $_POST['data'];
-            
-            // TODO : Check if this works 
             $data_content = json_decode(stripslashes($_POST['data']), true);
-            
             $data_type = 'final_content_selection';
         } else {
             // Old format for backward compatibility
             $data_type = sanitize_text_field($_POST['data_type']);
             $data_content = $_POST['data_content'];
         }
+        
+        // Get accepted and declined PMIDs
+        $accepted_pmids = isset($_POST['accepted_pmids']) ? json_decode(stripslashes($_POST['accepted_pmids']), true) : array();
+        $declined_pmids = isset($_POST['declined_pmids']) ? json_decode(stripslashes($_POST['declined_pmids']), true) : array();
+        
+        // Check if we should delete data after sending
+        $delete_after_send = isset($_POST['delete_after_send']) ? (bool)$_POST['delete_after_send'] : false;
+        
+        $this->log_webhook_data('ContentGen: Accepted PMIDs = ' . print_r($accepted_pmids, true));
+        $this->log_webhook_data('ContentGen: Declined PMIDs = ' . print_r($declined_pmids, true));
         
         $webhook_url = get_option('contentgen_outgoing_webhook_url', '');
         $webhook_secret = get_option('contentgen_outgoing_webhook_secret', '');
@@ -629,10 +646,45 @@ class ContentGen {
         ));
         
         if ($response_code === 200) {
+            // Delete data from research table if requested
+            if ($delete_after_send) {
+                $this->delete_pmids_from_research_table($accepted_pmids, $declined_pmids);
+            }
+            
             wp_send_json_success('Data sent to n8n successfully');
         } else {
             wp_send_json_error('n8n returned error: ' . $response_code);
         }
+    }
+
+    private function delete_pmids_from_research_table($accepted_pmids, $declined_pmids) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'contentgen_research_data';
+        
+        $this->log_webhook_data('ContentGen: Deleting PMIDs from research table');
+        $this->log_webhook_data('ContentGen: Accepted PMIDs to delete = ' . print_r($accepted_pmids, true));
+        $this->log_webhook_data('ContentGen: Declined PMIDs to delete = ' . print_r($declined_pmids, true));
+        
+        // Combine all PMIDs to delete
+        $all_pmids_to_delete = array_merge($accepted_pmids, $declined_pmids);
+        $all_pmids_to_delete = array_unique($all_pmids_to_delete);
+        
+        $this->log_webhook_data('ContentGen: All PMIDs to delete = ' . print_r($all_pmids_to_delete, true));
+        
+        // Delete each PMID
+        $deleted_count = 0;
+        foreach ($all_pmids_to_delete as $pmid) {
+            $result = $wpdb->delete($table_name, array('pmid' => (int)$pmid));
+            if ($result !== false) {
+                $deleted_count += $result;
+                $this->log_webhook_data('ContentGen: Deleted pmid ' . $pmid . ' - rows affected: ' . $result);
+            } else {
+                $this->log_webhook_data('ContentGen: Failed to delete pmid ' . $pmid . ' - error: ' . $wpdb->last_error);
+            }
+        }
+        
+        $this->log_webhook_data('ContentGen: Total rows deleted: ' . $deleted_count);
+        return $deleted_count;
     }
     
     public function test_outgoing_webhook() {
@@ -784,8 +836,8 @@ class ContentGen {
         
         console.log('ContentGen shortcode loaded');
         console.log('Plugin URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>');
-        console.log('Expected JS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/index-1752543051878.js');
-        console.log('Expected CSS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/index-1752543051935.css');
+        console.log('Expected JS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/index-1752630789451.js');
+        console.log('Expected CSS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/index-1752630789497.css');
         console.log('Container found:', !!document.getElementById('contentgen-app'));
         console.log('WordPress data provided:', window.contentgen_ajax);
         
