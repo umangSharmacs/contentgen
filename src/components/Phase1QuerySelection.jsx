@@ -1,43 +1,32 @@
 import React from 'react';
 import './Phase1QuerySelection.css';
+import Changelog from './Changelog';
 
 const Phase1QuerySelection = ({ onQuerySelect }) => {
-  const availableQueries = [
-    {
-      id: 'cancer',
-      name: 'Cancer',
-      description: 'Research papers and studies related to cancer treatment, prevention, and diagnosis',
-      icon: '🔬'
-    }
-    // More queries can be added here in the future
-  ];
-
   return (
     <div className="phase1-container">
-      <div className="phase1-header">
-        <h2>Select a Query</h2>
-        <p>Choose the type of content you want to review and select</p>
-      </div>
+      {/* Changelog Section */}
+      <Changelog />
 
-      <div className="query-selection">
-        {availableQueries.map((query) => (
-          <div 
-            key={query.id}
-            className="query-card"
-            onClick={() => onQuerySelect(query.id)}
+      {/* Query Selection Section */}
+      <div className="query-selection-section">
+        <div className="query-header">
+          <h2>Select Your Research Query</h2>
+          <p>Choose the type of research content you want to review and manage.</p>
+        </div>
+        
+        <div className="query-options">
+          <button 
+            className="query-option"
+            onClick={() => onQuerySelect('cancer')}
           >
-            <div className="query-icon">{query.icon}</div>
+            <div className="query-icon">🔬</div>
             <div className="query-content">
-              <h3>{query.name}</h3>
-              <p>{query.description}</p>
+              <h3>Cancer Research</h3>
+              <p>Review and manage cancer-related research tweets and content</p>
             </div>
-            <div className="query-arrow">→</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="phase1-footer">
-        <p>Currently, only cancer-related content is available. More query types will be added soon.</p>
+          </button>
+        </div>
       </div>
     </div>
   );

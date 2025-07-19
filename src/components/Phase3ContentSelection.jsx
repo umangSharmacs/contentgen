@@ -5,7 +5,8 @@ const Phase3ContentSelection = ({
   tweets, 
   declinedTweets, 
   tweetContentSelections,
-  selectedQuery 
+  selectedQuery,
+  onTweetContentSelection
 }) => {
   const [tweetSchedules, setTweetSchedules] = useState({});
   const [editingSchedule, setEditingSchedule] = useState(null);
@@ -281,6 +282,53 @@ const Phase3ContentSelection = ({
     }));
   };
 
+  // Handle individual content type deselection
+  const handleDeselectTwitter = (pmid) => {
+    const currentSelection = tweetContentSelections[pmid] || {};
+    const currentContentTypes = currentSelection.contentTypes || {};
+    
+    // Only change Twitter to false, preserve others
+    const newContentTypes = {
+      ...currentContentTypes,
+      twitter: false
+    };
+    
+    // Use the existing callback to update parent state
+    if (onTweetContentSelection) {
+      onTweetContentSelection(pmid, newContentTypes, currentSelection.tweetType || 'finalTweet', currentSelection.editedTweets || {});
+    }
+  };
+
+  const handleDeselectClinical = (pmid) => {
+    const currentSelection = tweetContentSelections[pmid] || {};
+    const currentContentTypes = currentSelection.contentTypes || {};
+    
+    // Only change Clinical Newsletter to false, preserve others
+    const newContentTypes = {
+      ...currentContentTypes,
+      clinicalNewsletter: false
+    };
+    
+    if (onTweetContentSelection) {
+      onTweetContentSelection(pmid, newContentTypes, currentSelection.tweetType || 'finalTweet', currentSelection.editedTweets || {});
+    }
+  };
+
+  const handleDeselectLongForm = (pmid) => {
+    const currentSelection = tweetContentSelections[pmid] || {};
+    const currentContentTypes = currentSelection.contentTypes || {};
+    
+    // Only change Long Form Newsletter to false, preserve others
+    const newContentTypes = {
+      ...currentContentTypes,
+      longFormNewsletter: false
+    };
+    
+    if (onTweetContentSelection) {
+      onTweetContentSelection(pmid, newContentTypes, currentSelection.tweetType || 'finalTweet', currentSelection.editedTweets || {});
+    }
+  };
+
   // Handle send data
   const handleSendData = async () => {
     setIsSending(true);
@@ -480,6 +528,15 @@ const Phase3ContentSelection = ({
                         <div className="score">Score: {parseFloat(tweet.score).toFixed(2)}</div>
                         <div className="cancer-type">{tweet.cancerType}</div>
                         {/* Removed tweetType label */}
+                        <div className="tweet-actions">
+                          <button 
+                            className="deselect-btn"
+                            onClick={() => handleDeselectTwitter(tweet.pmid)}
+                            title="Remove from Twitter"
+                          >
+                            ✕
+                          </button>
+                        </div>
                         {schedule && (
                           <div className="schedule-time">
                             {isEditing ? (
@@ -578,6 +635,15 @@ const Phase3ContentSelection = ({
                     <div className="newsletter-meta-row second-row">
                       <div className="score">Score: {tweet.score ? parseFloat(tweet.score).toFixed(2) : 'N/A'}</div>
                       <div className="cancer-type">{tweet.cancerType || 'Unknown Cancer Type'}</div>
+                      <div className="tweet-actions">
+                        <button 
+                          className="deselect-btn"
+                          onClick={() => handleDeselectClinical(tweet.pmid)}
+                          title="Remove from Clinical Newsletter"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   </div>
                   
@@ -685,6 +751,15 @@ const Phase3ContentSelection = ({
                     <div className="newsletter-meta-row second-row">
                       <div className="score">Score: {tweet.score ? parseFloat(tweet.score).toFixed(2) : 'N/A'}</div>
                       <div className="cancer-type">{tweet.cancerType || 'Unknown Cancer Type'}</div>
+                      <div className="tweet-actions">
+                        <button 
+                          className="deselect-btn"
+                          onClick={() => handleDeselectLongForm(tweet.pmid)}
+                          title="Remove from Long Form Newsletter"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   </div>
                   

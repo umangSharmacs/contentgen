@@ -586,3 +586,33 @@
     font-size: 12px;
   }
 } 
+
+.tweet-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deselect-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deselect-btn:hover {
+  background: #c82333;
+}
+
+.deselect-btn:active {
+  background: #bd2130;
+} 

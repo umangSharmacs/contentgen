@@ -9,8 +9,6 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-
-
 .phase2-title {
   margin-bottom: 20px;
 }
@@ -35,7 +33,7 @@
   justify-content: center;
 }
 
-.stat {
+.phase2-stat {
   text-align: center;
   padding: 16px 24px;
   background-color: #f8f9fa;
@@ -43,7 +41,7 @@
   border: 1px solid #e0e0e0;
 }
 
-.stat-number {
+.phase2-stat-number {
   display: block;
   font-size: 24px;
   font-weight: 600;
@@ -51,7 +49,7 @@
   margin-bottom: 4px;
 }
 
-.stat-label {
+.phase2-stat-label {
   font-size: 12px;
   color: #666;
   text-transform: uppercase;
@@ -62,13 +60,13 @@
   margin-bottom: 30px;
 }
 
-.tweets-grid {
+.phase2-tweets-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
 }
 
-.tweet-card {
+.phase2-tweet-card {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   padding: 20px;
@@ -78,55 +76,72 @@
   position: relative;
 }
 
-.tweet-card:hover {
+.phase2-tweet-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
-.tweet-card.declined {
-  background-color: #fff5f5;
-  border-color: #fed7d7;
-  opacity: 0.7;
+.phase2-tweet-card.declined {
+  box-shadow: 0 0 0 3px #fed7d7, 0 6px 20px rgba(254, 215, 215, 0.6);
+  border: 3px solid #fed7d7;
+  opacity: 0.9;
 }
 
-.tweet-card.declined::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(254, 215, 215, 0.3);
-  border-radius: 12px;
-  pointer-events: none;
+.phase2-tweet-card.declined::before {
+  display: none;
 }
 
-.tweet-header {
+.phase2-tweet-card.accepted {
+  box-shadow: 0 0 0 3px #c6f6d5, 0 6px 20px rgba(198, 246, 213, 0.6);
+  border: 3px solid #c6f6d5;
+}
+
+.phase2-tweet-card.accepted::before {
+  display: none;
+}
+
+.phase2-tweet-header {
   margin-bottom: 12px;
   width: 100%;
   display: grid;
-  grid-template-rows: 2;
+  grid-template-rows: auto auto auto;
   gap: 8px;
 }
 
-.tweet-meta-row {
+.phase2-tweet-title-row {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.phase2-article-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  margin: 0;
+}
+
+.phase2-tweet-meta-row {
   display: grid;
   gap: 12px;
   width: 100%;
 }
 
-.tweet-meta-row.first-row {
+.phase2-tweet-meta-row.first-row {
   grid-template-columns: 20% 20% 10% 50%;
   align-items: start;
 }
 
-.tweet-meta-row.second-row {
+.phase2-tweet-meta-row.second-row {
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 16px;
 }
 
-.pmid {
+.phase2-pmid {
   font-size: 12px;
   font-weight: 600;
   color: #333;
@@ -138,7 +153,7 @@
   margin: 0;
 }
 
-.doi {
+.phase2-doi {
   font-size: 12px;
   font-weight: 600;
   color: #6c757d;
@@ -150,16 +165,16 @@
   margin: 0;
 }
 
-.doi a {
+.phase2-doi a {
   color: inherit;
   text-decoration: none;
 }
 
-.doi a:hover {
+.phase2-doi a:hover {
   text-decoration: underline;
 }
 
-.journal {
+.phase2-journal {
   font-size: 12px;
   font-weight: 600;
   color: #007bff;
@@ -173,7 +188,7 @@
   border-right: 1px solid #e0e0e0;
 }
 
-.score {
+.phase2-score {
   font-size: 12px;
   font-weight: 600;
   color: #28a745;
@@ -184,12 +199,11 @@
   white-space: nowrap;
   flex-shrink: 0;
   margin: 0;
-  /* max-width: 100px; */
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.date {
+.phase2-date {
   font-size: 12px;
   color: #666;
   white-space: nowrap;
@@ -197,7 +211,7 @@
   margin: 0;
 }
 
-.cancer-type {
+.phase2-cancer-type {
   background-color: #e3f2fd;
   color: #1976d2;
   padding: 4px 8px;
@@ -214,15 +228,15 @@
   text-overflow: ellipsis;
 }
 
-.cancer-type:hover {
+.phase2-cancer-type:hover {
   background-color: #bbdefb;
 }
 
-.cancer-tag-edit {
+.phase2-cancer-tag-edit {
   display: inline-block;
 }
 
-.cancer-tag-input {
+.phase2-cancer-tag-input {
   background-color: #e3f2fd;
   color: #1976d2;
   padding: 4px 8px;
@@ -235,14 +249,14 @@
   min-width: 80px;
 }
 
-.tweet-divider {
+.phase2-tweet-divider {
   height: 1px;
   background-color: #e0e0e0;
   margin: 12px 0;
 }
 
 /* Tags Section */
-.tweet-main-section {
+.phase2-tweet-main-section {
   margin-bottom: 16px;
   padding: 12px;
   background-color: #f8f9fa;
@@ -250,28 +264,26 @@
   border: 1px solid #e0e0e0;
 }
 
-.tags-section {
+.phase2-tags-section {
   margin-bottom: 16px;
-  padding: 0;
-  background-color: transparent;
-  border-radius: 0;
-  border: none;
-  display: flex;
-  flex-direction: column;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
 }
 
-.tags-row {
+.phase2-tags-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   margin-bottom: 8px;
 }
 
-.tags-row:last-child {
+.phase2-tags-row:last-child {
   margin-bottom: 0;
 }
 
-.tags-label {
+.phase2-tags-label {
   font-size: 12px;
   font-weight: 600;
   color: #333;
@@ -280,41 +292,28 @@
   letter-spacing: 0.5px;
 }
 
-.tags-content {
+.phase2-tags-content {
   font-size: 12px;
   color: #666;
-  line-height: 1.4;
-  flex: 1;
   cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
   transition: background-color 0.2s ease;
 }
 
-.tags-content:hover {
-  background-color: #f0f0f0;
+.phase2-tags-content:hover {
+  background-color: #e0e0e0;
 }
 
-.tags-input {
+.phase2-tags-input {
   font-size: 12px;
-  color: #666;
-  line-height: 1.4;
-  flex: 1;
-  padding: 2px 4px;
-  border: 1px solid #007bff;
-  border-radius: 3px;
-  background-color: white;
+  padding: 2px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 120px;
 }
 
-.date {
-  font-size: 12px;
-  color: #666;
-  white-space: nowrap;
-  margin: 0;
-  border-right: 1px solid #e0e0e0;
-}
-
-.score {
+.phase2-tweet-score {
   font-size: 12px;
   font-weight: 600;
   color: #28a745;
@@ -322,30 +321,18 @@
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid #d4edda;
-  white-space: nowrap;
-  margin: 0;
 }
 
-.tweet-score {
-  font-size: 12px;
-  font-weight: 600;
-  color: #28a745;
-  background-color: #f8fff9;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #d4edda;
-}
-
-.tweet-content {
+.phase2-tweet-content {
   margin-bottom: 0;
 }
 
-.tweet-section {
+.phase2-tweet-section {
   margin-bottom: 16px;
   position: relative;
 }
 
-.tweet-section-content {
+.phase2-tweet-section-content {
   position: relative;
   cursor: pointer !important;
   padding: 8px;
@@ -353,12 +340,12 @@
   transition: background-color 0.2s ease;
 }
 
-.tweet-section-content:hover {
+.phase2-tweet-section-content:hover {
   background-color: #f8f9fa;
   border: 1px solid #e0e0e0;
 }
 
-.tweet-section-content:hover::after {
+.phase2-tweet-section-content:hover::after {
   content: 'Right-click or Ctrl+click to edit';
   position: absolute;
   top: 8px;
@@ -375,7 +362,7 @@
   font-weight: 500;
 }
 
-.tweet-section h4 {
+.phase2-tweet-section h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
@@ -384,14 +371,14 @@
   letter-spacing: 0.5px;
 }
 
-.tweet-text {
+.phase2-tweet-text {
   margin: 0 0 8px 0;
   font-size: 14px;
   line-height: 1.5;
   color: #333;
 }
 
-.tweet-edit {
+.phase2-tweet-edit {
   margin-bottom: 16px;
   padding: 12px;
   background-color: #f8f9fa;
@@ -399,7 +386,7 @@
   border-radius: 6px;
 }
 
-.tweet-edit-textarea {
+.phase2-tweet-edit-textarea {
   width: 100%;
   min-height: 100px;
   padding: 12px;
@@ -414,19 +401,19 @@
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.tweet-edit-textarea:focus {
+.phase2-tweet-edit-textarea:focus {
   outline: none;
   border-color: #007bff;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-.edit-actions {
+.phase2-edit-actions {
   display: flex;
   gap: 8px;
   margin-top: 8px;
 }
 
-.save-button, .cancel-button, .edit-button {
+.phase2-save-button, .phase2-cancel-button, .phase2-edit-button {
   padding: 6px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -435,86 +422,48 @@
   transition: all 0.2s ease;
 }
 
-.save-button {
+.phase2-save-button {
   background-color: #28a745;
   color: white;
   border-color: #28a745;
 }
 
-.save-button:hover {
+.phase2-save-button:hover {
   background-color: #218838;
 }
 
-.cancel-button {
+.phase2-cancel-button {
   background-color: #6c757d;
   color: white;
   border-color: #6c757d;
 }
 
-.cancel-button:hover {
+.phase2-cancel-button:hover {
   background-color: #5a6268;
 }
 
-.edit-button {
+.phase2-edit-button {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
 }
 
-.edit-button:hover {
+.phase2-edit-button:hover {
   background-color: #0056b3;
 }
 
-.tweet-details {
+.phase2-tweet-details {
   display: flex;
   gap: 12px;
   font-size: 12px;
   color: #666;
 }
 
-.cancer-type {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
-  display: inline-block;
-}
-
-.cancer-type:hover {
-  background-color: #bbdefb;
-}
-
-.cancer-tag-edit {
-  display: inline-block;
-}
-
-.cancer-tag-input {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  padding: 4px 8px;
-  border: 1px solid #1976d2;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  min-width: 80px;
-}
-
-/* Summary Section */
-.summary-section {
+.phase2-summary-section {
   margin-bottom: 16px;
 }
 
-.summary-section h4 {
+.phase2-summary-section h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
@@ -523,29 +472,28 @@
   letter-spacing: 0.5px;
 }
 
-.summary-content {
-  position: relative;
+.phase2-summary-content {
+  margin-bottom: 8px;
 }
 
-.summary-text {
-  margin: 0 0 8px 0;
-  font-size: 13px;
+.phase2-summary-text {
+  font-size: 14px;
   line-height: 1.5;
-  color: #666;
+  color: #333;
+  margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  transition: all 0.3s ease;
 }
 
-.summary-text.expanded {
+.phase2-summary-text.expanded {
   display: block;
   -webkit-line-clamp: unset;
-  overflow: visible;
 }
 
-.expand-button {
+.phase2-expand-button {
   background: none;
   border: none;
   color: #007bff;
@@ -555,108 +503,103 @@
   text-decoration: underline;
 }
 
-.expand-button:hover {
+.phase2-expand-button:hover {
   color: #0056b3;
 }
 
-/* Abstract Section */
-.abstract-section {
+.phase2-abstract-section {
   margin-bottom: 16px;
 }
 
-.abstract-toggle {
+.phase2-abstract-toggle {
   background: none;
-  border: 1px solid #ddd;
-  padding: 6px 12px;
+  border: none;
+  color: #007bff;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  margin-bottom: 8px;
+}
+
+.phase2-abstract-toggle:hover {
+  color: #0056b3;
+}
+
+.phase2-abstract-content {
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.phase2-abstract-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  margin: 0;
+}
+
+.phase2-tweet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.phase2-decline-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
-  color: #666;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-.abstract-toggle:hover {
-  background-color: #f8f9fa;
-  border-color: #007bff;
-  color: #007bff;
+.phase2-decline-button:hover {
+  background-color: #c82333;
 }
 
-.abstract-content {
-  margin-top: 8px;
+.phase2-accept-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phase2-accept-button:hover {
+  background-color: #218838;
+}
+
+.phase2-undecline-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phase2-undecline-button:hover {
+  background-color: #5a6268;
+}
+
+.phase2-content-selection {
+  margin-top: 16px;
   padding: 12px;
   background-color: #f8f9fa;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
 }
 
-.abstract-text {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
-  color: #666;
-}
-
-.tweet-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.decline-button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.decline-button:hover {
-  background-color: #c82333;
-}
-
-.accept-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.accept-button:hover {
-  background-color: #218838;
-}
-
-.undecline-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.undecline-button:hover {
-  background-color: #218838;
-}
-
-/* Content Selection */
-.content-selection {
-  margin-top: 16px;
-  padding: 16px;
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-}
-
-.content-selection h4 {
+.phase2-content-selection h4 {
   margin: 0 0 12px 0;
   font-size: 14px;
   font-weight: 600;
@@ -665,62 +608,57 @@
   letter-spacing: 0.5px;
 }
 
-.content-options {
+.phase2-content-options {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.content-option {
+.phase2-content-option {
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
   font-size: 14px;
   color: #333;
 }
 
-.content-option input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
+.phase2-content-option input[type="checkbox"] {
+  margin: 0;
 }
 
 .phase2-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0;
+  margin-top: 30px;
+  padding-top: 20px;
   border-top: 1px solid #e0e0e0;
-}
-
-.footer-info p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
-}
-
-
-
-.no-tweets {
   text-align: center;
-  padding: 60px 20px;
+}
+
+.phase2-footer-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.phase2-no-tweets {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.phase2-no-tweets h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.phase2-no-tweets p {
+  margin: 0;
+  font-size: 14px;
   color: #666;
 }
 
-.no-tweets h3 {
-  margin: 0 0 12px 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.no-tweets p {
-  margin: 0;
-  font-size: 14px;
-}
-
-/* Modal Styles */
-.tweet-modal-overlay {
+/* Modal styles */
+.phase2-tweet-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -728,38 +666,36 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 1000;
-  padding: 20px;
 }
 
-.tweet-modal {
+.phase2-tweet-modal {
   background-color: white;
   border-radius: 12px;
+  padding: 24px;
   max-width: 600px;
-  width: 100%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.modal-header {
+.phase2-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
 }
 
-.modal-header h3 {
+.phase2-modal-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #333;
 }
 
-.close-button {
+.phase2-close-button {
   background: none;
   border: none;
   font-size: 24px;
@@ -775,23 +711,23 @@
   transition: background-color 0.2s ease;
 }
 
-.close-button:hover {
+.phase2-close-button:hover {
   background-color: #f0f0f0;
 }
 
-.modal-content {
-  padding: 20px;
-}
-
-.modal-tweet,
-.modal-summary,
-.modal-abstract {
+.phase2-modal-content {
   margin-bottom: 20px;
 }
 
-.modal-tweet h4,
-.modal-summary h4,
-.modal-abstract h4 {
+.phase2-modal-tweet,
+.phase2-modal-summary,
+.phase2-modal-abstract {
+  margin-bottom: 16px;
+}
+
+.phase2-modal-tweet h4,
+.phase2-modal-summary h4,
+.phase2-modal-abstract h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
@@ -800,28 +736,29 @@
   letter-spacing: 0.5px;
 }
 
-.modal-tweet p,
-.modal-summary p,
-.modal-abstract p {
+.phase2-modal-tweet p,
+.phase2-modal-summary p,
+.phase2-modal-abstract p {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
   color: #333;
 }
 
-.modal-meta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.meta-item {
+.phase2-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   font-size: 12px;
   color: #666;
 }
 
-.meta-item strong {
+.phase2-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.phase2-meta-item strong {
   color: #333;
 } 

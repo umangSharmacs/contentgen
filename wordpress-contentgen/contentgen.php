@@ -3,7 +3,7 @@
  * Plugin Name: ContentGen - Research Tweet Manager
  * Plugin URI: https://yourdomain.com/contentgen
  * Description: A WordPress plugin for managing research tweets and content generation from n8n workflows with bidirectional data flow
- * Version: 1.9.9
+ * Version: 2.0.0
  * Author: Umang Sharma
  * License: GPL v2 or later
  * Text Domain: contentgen
@@ -15,9 +15,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('CONTENTGEN_VERSION', '1.9.9');
+define('CONTENTGEN_VERSION', '2.0.0');
 define('CONTENTGEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CONTENTGEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('CONTENTGEN_CSS_FILE', 'index-1752953375838.css');
+define('CONTENTGEN_JS_FILE', 'index-1752953375801.js');
 
 class ContentGen {
     
@@ -87,6 +89,7 @@ class ContentGen {
             pmid int NOT NULL,
             date_added date NOT NULL,
             journal varchar(255),
+            title text,
             tweet text,
             tweet_few_shot text,
             doi varchar(255),
@@ -214,13 +217,14 @@ class ContentGen {
     
     public function enqueue_scripts() {
         // Load the built React application (static reference to latest build)
-        wp_enqueue_style('contentgen-styles', CONTENTGEN_PLUGIN_URL . 'assets/assets/index-1752703313223.css', array(), CONTENTGEN_VERSION);
-        wp_enqueue_script('contentgen-script', CONTENTGEN_PLUGIN_URL . 'assets/assets/index-1752703313184.js', array(), CONTENTGEN_VERSION, true);
+        wp_enqueue_style('contentgen-styles', CONTENTGEN_PLUGIN_URL . 'assets/assets/' . CONTENTGEN_CSS_FILE, array(), CONTENTGEN_VERSION);
+        wp_enqueue_script('contentgen-script', CONTENTGEN_PLUGIN_URL . 'assets/assets/' . CONTENTGEN_JS_FILE, array(), CONTENTGEN_VERSION, true);
 
         wp_localize_script('contentgen-script', 'contentgen_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('contentgen_nonce'),
             'plugin_url' => CONTENTGEN_PLUGIN_URL,
+            'version' => CONTENTGEN_VERSION,
             'strings' => array(
                 'loading' => __('Loading...', 'contentgen'),
                 'error' => __('An error occurred', 'contentgen'),
@@ -418,6 +422,7 @@ class ContentGen {
                 'pmid' => isset($data['pmid']) ? (int)$data['pmid'] : (isset($data['PMID']) ? (int)$data['PMID'] : 0),
                 'date_added' => isset($data['date']) ? $data['date'] : (isset($data['Date']) ? $data['Date'] : (isset($data['Date ']) ? $data['Date '] : current_time('Y-m-d'))),
                 'journal' => isset($data['journal']) ? (string)$data['journal'] : (isset($data['Journal']) ? (string)$data['Journal'] : ''),
+                'title' => isset($data['title']) ? (string)$data['title'] : (isset($data['Title']) ? (string)$data['Title'] : ''),
                 'tweet' => isset($data['tweet']) ? (string)$data['tweet'] : (isset($data['Tweet']) ? (string)$data['Tweet'] : ''),
                 'tweet_few_shot' => isset($data['tweetFewShot']) ? (string)$data['tweetFewShot'] : (isset($data['Tweet (Few shot learning)']) ? (string)$data['Tweet (Few shot learning)'] : (isset($data['Tweet Few Shot']) ? (string)$data['Tweet Few Shot'] : '')),
                 'doi' => isset($data['doi']) ? (string)$data['doi'] : (isset($data['DOI']) ? (string)$data['DOI'] : ''),
@@ -827,6 +832,7 @@ class ContentGen {
             ajax_url: '<?php echo admin_url('admin-ajax.php'); ?>',
             nonce: '<?php echo wp_create_nonce('contentgen_nonce'); ?>',
             plugin_url: '<?php echo CONTENTGEN_PLUGIN_URL; ?>',
+            version: '<?php echo CONTENTGEN_VERSION; ?>',
             strings: {
                 loading: '<?php echo __('Loading...', 'contentgen'); ?>',
                 error: '<?php echo __('An error occurred', 'contentgen'); ?>',
@@ -836,16 +842,16 @@ class ContentGen {
         
         console.log('ContentGen shortcode loaded');
         console.log('Plugin URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>');
-        console.log('Expected JS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/index-1752630789451.js');
-        console.log('Expected CSS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/index-1752630789497.css');
+        console.log('Expected JS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/' . CONTENTGEN_JS_FILE);
+        console.log('Expected CSS URL:', '<?php echo CONTENTGEN_PLUGIN_URL; ?>assets/assets/' . CONTENTGEN_CSS_FILE);
         console.log('Container found:', !!document.getElementById('contentgen-app'));
         console.log('WordPress data provided:', window.contentgen_ajax);
         
         // Check for scripts after DOM is loaded
         function checkScripts() {
             console.log('ContentGen: Checking for loaded scripts...');
-            console.log('CSS loaded:', !!document.querySelector('link[href*="index-1752543051935.css"]'));
-            console.log('JS loaded:', !!document.querySelector('script[src*="index-1752543051878.js"]'));
+            console.log('CSS loaded:', !!document.querySelector('link[href*="' . CONTENTGEN_CSS_FILE . '"]'));
+            console.log('JS loaded:', !!document.querySelector('script[src*="' . CONTENTGEN_JS_FILE . '"]'));
             
             // List all script tags for debugging
             const allScripts = document.querySelectorAll('script[src]');

@@ -13,8 +13,9 @@ const PhaseWorkflow = () => {
   const [declinedTweets, setDeclinedTweets] = useState([]);
   const [contentSelections, setContentSelections] = useState({});
   const [acceptedTweets, setAcceptedTweets] = useState([]); // eslint-disable-line no-unused-vars
-  const [loading, setLoading] = useState(false);
   const [tweetContentSelections, setTweetContentSelections] = useState({});
+  const [showContentSelection, setShowContentSelection] = useState({});
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Fetch research data from WordPress on mount
@@ -55,6 +56,7 @@ const PhaseWorkflow = () => {
               pmid: item.pmid?.toString(),
               date: item.date_added || item.date,
               journal: item.journal,
+              title: item.title,
               tweet: item.tweet,
               "Tweet (Few shot learning)": item.tweet_few_shot || item.tweet,
               doi: item.doi,
@@ -111,10 +113,7 @@ const PhaseWorkflow = () => {
   const handleQuerySelection = (query) => {
     setSelectedQuery(query);
     setCurrentPhase(2);
-    setDeclinedTweets([]);
-    setContentSelections({});
-    setAcceptedTweets([]);
-    setTweetContentSelections({});
+    // Don't clear state here - preserve content selections between phases
   };
 
   const handleDeclineTweet = (pmid) => {
@@ -135,7 +134,11 @@ const PhaseWorkflow = () => {
         contentTypes,
         tweetType,
         editedTweets: {
-          finalTweet: editedTweets.finalTweet ? { [pmid]: editedTweets.finalTweet[pmid] } : {}
+          ...((prev[pmid] && prev[pmid].editedTweets) || {}),
+          ...editedTweets,
+          finalTweet: editedTweets.finalTweet
+            ? { ...((prev[pmid]?.editedTweets?.finalTweet) || {}), ...editedTweets.finalTweet }
+            : ((prev[pmid]?.editedTweets?.finalTweet) || {})
         }
       }
     }));
@@ -166,6 +169,7 @@ const PhaseWorkflow = () => {
     setContentSelections({});
     setAcceptedTweets([]);
     setTweetContentSelections({});
+    setShowContentSelection({});
   };
 
   if (loading) {
@@ -261,6 +265,8 @@ const PhaseWorkflow = () => {
             selectedQuery={selectedQuery}
             tweetContentSelections={tweetContentSelections}
             onTweetContentSelection={handleTweetContentSelection}
+            showContentSelection={showContentSelection}
+            setShowContentSelection={setShowContentSelection}
           />
         )}
 
@@ -274,6 +280,7 @@ const PhaseWorkflow = () => {
             onContentSelectionUpdate={handleContentSelectionUpdate}
             onUnDeclineTweet={handleUnDeclineTweet}
             selectedQuery={selectedQuery}
+            onTweetContentSelection={handleTweetContentSelection}
           />
         )}
 

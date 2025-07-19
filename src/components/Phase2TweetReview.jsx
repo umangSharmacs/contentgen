@@ -9,10 +9,11 @@ const Phase2TweetReview = ({
   onUnDeclineTweet,
   selectedQuery,
   tweetContentSelections,
-  onTweetContentSelection
+  onTweetContentSelection,
+  showContentSelection,
+  setShowContentSelection
 }) => {
   const [selectedTweet, setSelectedTweet] = useState(null);
-  const [showContentSelection, setShowContentSelection] = useState({});
 
   const handleDeclineTweet = (pmid) => {
     onDeclineTweet(pmid);
@@ -61,23 +62,23 @@ const Phase2TweetReview = ({
           <p>Remove the worst tweets by clicking the decline button. Declined tweets will be highlighted in pale red.</p>
         </div>
         <div className="phase2-stats">
-          <div className="stat">
-            <span className="stat-number">{tweets.length}</span>
-            <span className="stat-label">Total Tweets</span>
+          <div className="phase2-stat">
+            <span className="phase2-stat-number">{tweets.length}</span>
+            <span className="phase2-stat-label">Total Tweets</span>
           </div>
-          <div className="stat">
-            <span className="stat-number">{declinedTweets.length}</span>
-            <span className="stat-label">Declined</span>
+          <div className="phase2-stat">
+            <span className="phase2-stat-number">{declinedTweets.length}</span>
+            <span className="phase2-stat-label">Declined</span>
           </div>
-          <div className="stat">
-            <span className="stat-number">{remainingTweets.length}</span>
-            <span className="stat-label">Remaining</span>
+          <div className="phase2-stat">
+            <span className="phase2-stat-number">{remainingTweets.length}</span>
+            <span className="phase2-stat-label">Remaining</span>
           </div>
         </div>
       </div>
 
       <div className="phase2-content">
-        <div className="tweets-grid">
+        <div className="phase2-tweets-grid">
           {tweets.map((tweet) => (
             <TweetCard
               key={tweet.pmid}
@@ -94,7 +95,7 @@ const Phase2TweetReview = ({
         </div>
 
         {tweets.length === 0 && (
-          <div className="no-tweets">
+          <div className="phase2-no-tweets">
             <h3>No tweets available</h3>
             <p>There are no tweets matching your query criteria.</p>
           </div>
