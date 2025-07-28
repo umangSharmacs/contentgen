@@ -13,8 +13,8 @@ const Phase1QuerySelection = ({ onQuerySelect }) => {
         <div className="query-header">
           <h2>Select Your Research Query</h2>
           <p>Choose the type of research content you want to review and manage.</p>
-        </div>
-        
+      </div>
+
         <div className="query-options">
           <button 
             className="query-option"
@@ -26,7 +26,7 @@ const Phase1QuerySelection = ({ onQuerySelect }) => {
               <p>Review and manage cancer-related research tweets and content</p>
             </div>
           </button>
-        </div>
+      </div>
       </div>
     </div>
   );

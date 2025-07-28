@@ -3,7 +3,7 @@
  * Plugin Name: ContentGen - Research Tweet Manager
  * Plugin URI: https://yourdomain.com/contentgen
  * Description: A WordPress plugin for managing research tweets and content generation from n8n workflows with bidirectional data flow
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Umang Sharma
  * License: GPL v2 or later
  * Text Domain: contentgen
@@ -15,11 +15,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('CONTENTGEN_VERSION', '2.0.0');
+define('CONTENTGEN_VERSION', '2.0.1');
 define('CONTENTGEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CONTENTGEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('CONTENTGEN_CSS_FILE', 'index-1752953375838.css');
-define('CONTENTGEN_JS_FILE', 'index-1752953375801.js');
+define('CONTENTGEN_CSS_FILE', 'index-1753223264190.css');
+define('CONTENTGEN_JS_FILE', 'index-1753223264145.js');
 
 class ContentGen {
     

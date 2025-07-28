@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Phase3ContentSelection.css';
+import SendConfirmationModal from './SendConfirmationModal';
+import SendSuccessModal from './SendSuccessModal';
 
 const Phase3ContentSelection = ({ 
   tweets, 
@@ -20,6 +22,8 @@ const Phase3ContentSelection = ({
   });
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Filter tweets based on content selections
   const getSelectedTweets = (contentType) => {
@@ -329,10 +333,33 @@ const Phase3ContentSelection = ({
     }
   };
 
-  // Handle send data
+  // --- AGGREGATE COUNTS FOR MODAL ---
+  const counts = {
+    twitter: twitterTweets.length,
+    clinical: clinicalNewsletterTweets.length,
+    longform: longFormNewsletterTweets.length,
+    declined: declinedTweets.length
+  };
+
+  // --- MODAL SEND HANDLERS ---
+  const handleSendClick = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmSend = async () => {
+    setShowConfirmation(false);
+    const wasSuccess = await handleSendData();
+    if (wasSuccess) setShowSuccess(true);
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+  };
+
+  // --- MODIFIED handleSendData: returns true if success, false if error ---
   const handleSendData = async () => {
     setIsSending(true);
-    setSendStatus(null);
+    // setSendStatus(null); // Remove this line
 
     // Collect all accepted PMIDs (from all content types)
     const acceptedPmids = [];
@@ -434,6 +461,7 @@ const Phase3ContentSelection = ({
       }
     };
 
+    let success = false;
     try {
       console.log('ContentGen: Sending data to n8n:', dataToSend);
       console.log('ContentGen: Accepted PMIDs:', acceptedPmids);
@@ -466,22 +494,27 @@ const Phase3ContentSelection = ({
         
         if (result.success) {
           setSendStatus('success');
+          success = true;
           console.log('ContentGen: Data sent successfully to n8n:', result);
         } else {
           setSendStatus('error');
+          success = false;
           console.error('ContentGen: Failed to send data to n8n:', result);
         }
       } else {
         console.log('ContentGen: No WordPress environment, logging data only');
         setSendStatus('success');
+        success = true;
         console.log('ContentGen: Data would be sent to n8n (no WordPress):', dataToSend);
       }
     } catch (error) {
       console.error('ContentGen: Error sending data to n8n:', error);
       setSendStatus('error');
+      success = false;
     } finally {
       setIsSending(false);
     }
+    return success;
   };
 
   return (
@@ -843,7 +876,7 @@ const Phase3ContentSelection = ({
       <div className="send-data-section">
         <button 
           className={`send-data-button ${isSending ? 'sending' : ''}`}
-          onClick={handleSendData}
+          onClick={handleSendClick}
           disabled={isSending}
         >
           {isSending ? 'Sending...' : 'Send Final Data'}
@@ -858,6 +891,17 @@ const Phase3ContentSelection = ({
           {!sendStatus && 'This will send all selected content to your n8n workflow.'}
         </p>
       </div>
+      <SendConfirmationModal
+        open={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirmSend}
+        counts={counts}
+      />
+      <SendSuccessModal
+        open={showSuccess}
+        onClose={handleCloseSuccess}
+        message="Your data has been sent to n8n."
+      />
     </div>
   );
 };

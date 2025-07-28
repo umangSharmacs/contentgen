@@ -12,6 +12,13 @@ const Changelog = () => {
 
   const changelog = [
     {
+      version: '2.0.1.0',
+      date: '2025-07-22',
+      changes: [
+        'Added success modal to Phase 3'
+      ]
+    },
+    {
         version: '2.0.0.0',
         date: '2025-07-22',
         changes: [

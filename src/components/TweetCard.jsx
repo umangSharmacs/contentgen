@@ -246,13 +246,13 @@ const TweetCard = ({
         <div className="phase2-tweet-section">
           <h4>Final Tweet</h4>
           <div className="phase2-tweet-edit">
-            <textarea
-              value={finalTweet}
+              <textarea
+                value={finalTweet}
               onChange={handleFinalTweetChange}
               className="phase2-tweet-edit-textarea"
-              placeholder="Write your final tweet here..."
-            />
-          </div>
+                placeholder="Write your final tweet here..."
+              />
+            </div>
         </div>
       </div>
       {/* Divider after tweets */}
@@ -260,43 +260,43 @@ const TweetCard = ({
       {/* Summary Section */}
       {tweet.summary && (
         <div className="phase2-summary-section">
-          <h4>Summary</h4>
+        <h4>Summary</h4>
           <div className="phase2-summary-content">
             <p className={`phase2-summary-text ${expandedSummaries[tweet.pmid] ? 'expanded' : ''}`}>
               {tweet.summary}
-            </p>
-            {shouldShowReadMore(tweet.summary) && (
-              <button 
+          </p>
+          {shouldShowReadMore(tweet.summary) && (
+            <button 
                 className="phase2-expand-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSummaryExpansion(tweet.pmid);
-                }}
-              >
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSummaryExpansion(tweet.pmid);
+              }}
+            >
                 {expandedSummaries[tweet.pmid] ? 'Show Less' : 'Read More'}
-              </button>
-            )}
-          </div>
+            </button>
+          )}
         </div>
+      </div>
       )}
       {/* Abstract Section */}
       {tweet.abstract && (
         <div className="phase2-abstract-section">
-          <button 
+        <button 
             className="phase2-abstract-toggle"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleAbstract(tweet.pmid);
-            }}
-          >
-            {showAbstracts[tweet.pmid] ? 'Hide Abstract' : 'Show Abstract'}
-          </button>
-          {showAbstracts[tweet.pmid] && (
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleAbstract(tweet.pmid);
+          }}
+        >
+          {showAbstracts[tweet.pmid] ? 'Hide Abstract' : 'Show Abstract'}
+        </button>
+        {showAbstracts[tweet.pmid] && (
             <div className="phase2-abstract-content">
               <p className="phase2-abstract-text">{tweet.abstract}</p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
       )}
       {/* Tweet Actions */}
       <div className="phase2-tweet-actions">

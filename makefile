@@ -29,7 +29,7 @@ deploy:
 	@cp -r $(ASSETS_SOURCE)/* $(ASSETS_DEST)/
 	@echo "Assets deployed to $(ASSETS_DEST)"
 
-# Update version and file references in plugin
+	# Update version and file references in plugin
 .PHONY: version
 version:
 	@echo "Updating plugin version and file references..."
