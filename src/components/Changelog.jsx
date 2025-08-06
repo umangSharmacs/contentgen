@@ -12,6 +12,14 @@ const Changelog = () => {
 
   const changelog = [
     {
+      version: '2.2.0',
+      date: '2025-08-06',
+      changes: [
+        'Added Filtering to Phase 2',
+        'Phase 2 tweets cards can now be grouped by Cancer Tags'
+      ]
+    },
+    {
       version: '2.0.1.0',
       date: '2025-07-22',
       changes: [

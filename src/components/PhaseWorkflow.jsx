@@ -3,7 +3,6 @@ import Phase1QuerySelection from './Phase1QuerySelection';
 import Phase2TweetReview from './Phase2TweetReview';
 import Phase3ContentSelection from './Phase3ContentSelection';
 import './PhaseWorkflow.css';
-// import { dummyResearchData } from '../utils/dummyData';
 
 const PhaseWorkflow = () => {
   const [currentPhase, setCurrentPhase] = useState(1);
