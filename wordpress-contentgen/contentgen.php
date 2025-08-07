@@ -18,8 +18,8 @@ if (!defined('ABSPATH')) {
 define('CONTENTGEN_VERSION', '2.2.0');
 define('CONTENTGEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CONTENTGEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('CONTENTGEN_CSS_FILE', 'index-1754517444019.css');
-define('CONTENTGEN_JS_FILE', 'index-1754517443972.js');
+define('CONTENTGEN_CSS_FILE', 'index-1754536381312.css');
+define('CONTENTGEN_JS_FILE', 'index-1754536381241.js');
 
 class ContentGen {
     
@@ -257,7 +257,8 @@ class ContentGen {
     }
     
     public function admin_enqueue_scripts() {
-        wp_enqueue_style('contentgen-admin-styles', CONTENTGEN_PLUGIN_URL . 'assets/css/admin.css', array(), CONTENTGEN_VERSION);
+        // Admin styles are not needed for this plugin
+        // wp_enqueue_style('contentgen-admin-styles', CONTENTGEN_PLUGIN_URL . 'assets/css/admin.css', array(), CONTENTGEN_VERSION);
     }
     
     private function log_webhook_data($data) {
