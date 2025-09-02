@@ -1,0 +1,463 @@
+.youtube-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.youtube-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.youtube-card.accepted {
+  box-shadow: 0 0 0 3px #c6f6d5, 0 6px 20px rgba(198, 246, 213, 0.6);
+  border: 3px solid #c6f6d5;
+}
+
+.youtube-card.accepted::before {
+  display: none;
+}
+
+.youtube-card.declined {
+  box-shadow: 0 0 0 3px #fed7d7, 0 6px 20px rgba(254, 215, 215, 0.6);
+  border: 3px solid #fed7d7;
+  opacity: 0.9;
+}
+
+.youtube-card.declined::before {
+  display: none;
+}
+
+.youtube-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.youtube-card .header-left {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.youtube-card .header-right {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.youtube-card .pmid-section,
+.youtube-card .date-section,
+.youtube-card .journal-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.youtube-card .pmid-label,
+.youtube-card .date-label,
+.youtube-card .journal-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.youtube-card .pmid-value,
+.youtube-card .date-value {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.youtube-card .journal-value.youtube-badge {
+  background: #ef4444;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.youtube-card .status-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.youtube-card .status-indicator.accepted {
+  background: #10b981;
+  color: white;
+}
+
+.youtube-card .status-indicator.declined {
+  background: #ef4444;
+  color: white;
+}
+
+/* Tags and People Section */
+.youtube-card .youtube-tags-section {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.youtube-card .youtube-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.youtube-card .youtube-tags-row:last-child {
+  margin-bottom: 0;
+}
+
+.youtube-card .youtube-tags-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  min-width: 50px;
+}
+
+.youtube-card .youtube-tags-content {
+  font-size: 12px;
+  color: #374151;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.youtube-card .youtube-tags-content:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.youtube-card .youtube-tags-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #374151;
+  background: white;
+  outline: none;
+}
+
+.youtube-card .youtube-tags-input:focus {
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.youtube-card .tweet-section {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.youtube-card .tweet-section.original-tweet {
+  background: #f9fafb;
+  border-left: 3px solid #6b7280;
+}
+
+.youtube-card .tweet-section.final-tweet {
+  background: #fefefe;
+  border-left: 3px solid #ef4444;
+}
+
+.youtube-card .original-content p {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #6b7280;
+  margin: 0;
+  font-style: italic;
+}
+
+.youtube-card .editable-content .tweet-edit-textarea {
+  border: none;
+  background: transparent;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.youtube-card .editable-content .tweet-edit-textarea:focus {
+  border: 2px solid #ef4444;
+  background: white;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+.youtube-card .tweet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.youtube-card .tweet-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.youtube-card .tweet-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.youtube-card .copy-button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.youtube-card .copy-button:hover {
+  background: #f3f4f6;
+}
+
+.youtube-card .copy-button:hover .material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+  color: #374151;
+}
+
+.youtube-card .tweet-content {
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.youtube-card .tweet-content p {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #374151;
+  margin: 0;
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.youtube-card .tweet-edit-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 2px solid #3b82f6;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #374151;
+  background: white;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.youtube-card .tweet-edit-textarea:focus {
+  outline: none;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.youtube-card .action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.youtube-card .action-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 70px;
+  justify-content: center;
+}
+
+.youtube-card .accept-button {
+  background: #10b981;
+  color: white;
+}
+
+.youtube-card .accept-button:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.youtube-card .accept-button.youtube-accept {
+  background: #28a745;
+}
+
+.youtube-card .accept-button.youtube-accept:hover:not(:disabled) {
+  background: #218838;
+}
+
+.youtube-card .decline-button {
+  background: #ef4444;
+  color: white;
+}
+
+.youtube-card .decline-button:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.youtube-card .edit-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.youtube-card .edit-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.youtube-card .cancel-button {
+  background: #6b7280;
+  color: white;
+}
+
+.youtube-card .cancel-button:hover:not(:disabled) {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.youtube-card .undecline-button {
+  background: #6c757d;
+  color: white;
+}
+
+.youtube-card .undecline-button:hover:not(:disabled) {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.youtube-card .unaccept-button {
+  background: #6c757d;
+  color: white;
+}
+
+.youtube-card .unaccept-button:hover:not(:disabled) {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.youtube-card .action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Material Icons */
+.youtube-card .material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .youtube-card {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .youtube-card .card-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .youtube-card .header-left, .youtube-card .header-right {
+    gap: 12px;
+  }
+
+  .youtube-card .action-buttons {
+    flex-direction: column;
+  }
+
+  .youtube-card .action-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .youtube-card {
+    padding: 10px;
+  }
+
+  .youtube-card .header-left, .youtube-card .header-right {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .youtube-card .tweet-content p {
+    font-size: 12px;
+  }
+
+  .youtube-card .status-indicator {
+    position: static;
+    margin-bottom: 8px;
+    align-self: flex-start;
+  }
+}

@@ -19,6 +19,29 @@
   opacity: 0.7;
 }
 
+
+.phase2-tweet-card .status-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.phase2-tweet-card .status-indicator.accepted {
+  background: #10b981;
+  color: white;
+}
+
+.phase2-tweet-card .status-indicator.declined {
+  background: #ef4444;
+  color: white;
+}
+
+
 .tweet-card.declined::before {
   content: '';
   position: absolute;

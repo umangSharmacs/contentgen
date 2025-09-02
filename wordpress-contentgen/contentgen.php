@@ -3,7 +3,7 @@
  * Plugin Name: ContentGen - Research Tweet Manager
  * Plugin URI: https://yourdomain.com/contentgen
  * Description: A WordPress plugin for managing research tweets and content generation from n8n workflows with bidirectional data flow
- * Version: 2.2.0
+ * Version: 2.4.5
  * Author: Umang Sharma
  * License: GPL v2 or later
  * Text Domain: contentgen
@@ -15,11 +15,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('CONTENTGEN_VERSION', '2.2.0');
+define('CONTENTGEN_VERSION', '2.4.5');
 define('CONTENTGEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CONTENTGEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('CONTENTGEN_CSS_FILE', 'index-1754536381312.css');
-define('CONTENTGEN_JS_FILE', 'index-1754536381241.js');
+define('CONTENTGEN_CSS_FILE', 'index-1756844211824.css');
+define('CONTENTGEN_JS_FILE', 'index-1756844211783.js');
 
 class ContentGen {
     
@@ -936,6 +936,12 @@ class ContentGen {
         </script>
         <?php
         return ob_get_clean();
+    }
+
+    public function handle_youtube_webhook() {
+        // Similar to handle_webhook but specifically for YouTube content
+        // You can add YouTube-specific processing here if needed
+        return $this->handle_webhook();
     }
 }
 

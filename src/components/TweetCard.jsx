@@ -23,7 +23,7 @@ const TweetCard = ({
   // Track if user is currently typing
   const isTypingRef = useRef(false);
   const typingTimeoutRef = useRef(null);
-
+  
   // Final tweet state
   const [finalTweet, setFinalTweet] = useState(() => {
     // Get final tweet from content selections first, then fall back to tweet.finalTweet
@@ -171,8 +171,18 @@ const TweetCard = ({
               {editedCancerTags[tweet.pmid] || tweet.cancerType || 'Unknown Cancer Type'}
             </div>
           )}
+          
         </div>
       </div>
+      
+      {/* Status Indicator */}
+      {/* {(isAccepted || isDeclined) && (
+        <div className={`status-indicator ${getStatusClass()}`}>
+          {isAccepted && <span className="status-text">✓ Accepted</span>}
+          {isDeclined && <span className="status-text">✗ Declined</span>}
+        </div>
+      )} */}
+
       {/* Tags and People */}
       <div className="phase2-tags-section">
         <div className="phase2-tags-row">
@@ -230,6 +240,7 @@ const TweetCard = ({
           )}
         </div>
       </div>
+      
       {/* Tweet Content */}
       <div className="phase2-tweet-content">
         {/* Few Shot Learning Tweet (non-editable) */}
@@ -321,29 +332,46 @@ const TweetCard = ({
             >
               Decline
             </button>
-            <button 
-              className="phase2-accept-button"
-              onClick={(e) => {
-                e.stopPropagation();
-                // Toggle content selection visibility
-                onToggleContentSelection(tweet.pmid);
-                
-                // Auto-select Twitter and Clinical Newsletter when first accepting
-                if (!showContentSelection) {
-                  const newContentTypes = { 
-                    ...tweetContentSelections?.contentTypes, 
-                    twitter: true, 
-                    clinicalNewsletter: true 
-                  };
-                  onTweetContentSelection(tweet.pmid, newContentTypes, tweetContentSelections?.tweetType || 'finalTweet', {
-                    ...tweetContentSelections?.editedTweets,
-                    finalTweet: { ...((tweetContentSelections?.editedTweets && tweetContentSelections.editedTweets.finalTweet) || {}), [tweet.pmid]: finalTweet }
-                  });
-                }
-              }}
-            >
-              Accept
-            </button>
+            {isAccepted ? (
+              <button 
+                className="phase2-unaccept-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Clear all content selections to unaccept
+                  onTweetContentSelection(tweet.pmid, {
+                    twitter: false,
+                    clinicalNewsletter: false,
+                    longFormNewsletter: false
+                  }, 'finalTweet', {});
+                }}
+              >
+                Unaccept
+              </button>
+            ) : (
+              <button 
+                className="phase2-accept-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Toggle content selection visibility
+                  onToggleContentSelection(tweet.pmid);
+                  
+                  // Auto-select Twitter and Clinical Newsletter when first accepting
+                  if (!showContentSelection) {
+                    const newContentTypes = { 
+                      ...tweetContentSelections?.contentTypes, 
+                      twitter: true, 
+                      clinicalNewsletter: true 
+                    };
+                    onTweetContentSelection(tweet.pmid, newContentTypes, tweetContentSelections?.tweetType || 'finalTweet', {
+                      ...tweetContentSelections?.editedTweets,
+                      finalTweet: { ...((tweetContentSelections?.editedTweets && tweetContentSelections.editedTweets.finalTweet) || {}), [tweet.pmid]: finalTweet }
+                    });
+                  }
+                }}
+              >
+                Accept
+              </button>
+            )}
           </>
         )}
       </div>

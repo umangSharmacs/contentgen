@@ -24,6 +24,8 @@ const Phase3ContentSelection = ({
   const [sendStatus, setSendStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [includeTags, setIncludeTags] = useState(true);
+  const [includePeople, setIncludePeople] = useState(true);
 
   // Filter tweets based on content selections
   const getSelectedTweets = (contentType) => {
@@ -91,7 +93,12 @@ const Phase3ContentSelection = ({
 
   // Get the correct tweet content based on selection
   const getTweetContent = (tweet, tweetSelection) => {
-    // Only use edited final tweet if available, otherwise blank
+    // For YouTube tweets, use the tweet content directly or from editedTweets
+    if (tweet.journal?.toLowerCase() === 'youtube') {
+      return tweetSelection?.editedTweets?.finalTweet?.[tweet.pmid] || tweet.tweet || '';
+    }
+    
+    // For regular tweets, use edited final tweet if available, otherwise blank
     const finalTweet = tweetSelection?.editedTweets?.finalTweet?.[tweet.pmid] || tweet.finalTweet;
     return finalTweet || '';
   };
@@ -392,6 +399,8 @@ const Phase3ContentSelection = ({
       query: selectedQuery,
       timestamp: new Date().toISOString(),
       twitter: {
+        tags: includeTags,
+        people: includePeople,
         tweets: twitterTweets.map(tweet => {
           const tweetSelection = tweetContentSelections[tweet.pmid];
           const finalTweet = getTweetContent(tweet, tweetSelection);
@@ -529,10 +538,30 @@ const Phase3ContentSelection = ({
         <div className="content-section">
           <div className="section-header">
             <h3>Twitter Content</h3>
-            <div className="section-stats">
-              <span className="stat">
-                <strong>{twitterTweets.length}</strong> selected
-              </span>
+            <div className="section-controls">
+              <div className="global-options">
+                <label className="global-option">
+                  <input 
+                    type="checkbox" 
+                    checked={includeTags}
+                    onChange={(e) => setIncludeTags(e.target.checked)}
+                  />
+                  <span>Include Tags</span>
+                </label>
+                <label className="global-option">
+                  <input 
+                    type="checkbox" 
+                    checked={includePeople}
+                    onChange={(e) => setIncludePeople(e.target.checked)}
+                  />
+                  <span>Include People</span>
+                </label>
+              </div>
+              <div className="section-stats">
+                <span className="stat">
+                  <strong>{twitterTweets.length}</strong> selected
+                </span>
+              </div>
             </div>
           </div>
           
@@ -548,18 +577,33 @@ const Phase3ContentSelection = ({
                   <div key={tweet.pmid} className="tweet-item">
                     <div className="tweet-header">
                       <div className="tweet-meta-row first-row">
-                        <div className="pmid">PMID: {tweet.pmid}</div>
-                        <div className="doi">
-                          <a href={`https://doi.org/${tweet.doi}`} target="_blank" rel="noopener noreferrer">
-                            DOI: {tweet.doi}
-                          </a>
-                        </div>
-                        <div className="date">{tweet.date}</div>
-                        <div className="journal">{tweet.journal}</div>
+                        {tweet.journal?.toLowerCase() === 'youtube' ? (
+                          // Simplified header for YouTube tweets - only journal and date
+                          <>
+                            <div className="journal youtube-journal">{tweet.journal}</div>
+                            <div className="date">{tweet.date}</div>
+                          </>
+                        ) : (
+                          // Full header for regular tweets
+                          <>
+                            <div className="pmid">PMID: {tweet.pmid}</div>
+                            <div className="doi">
+                              <a href={`https://doi.org/${tweet.doi}`} target="_blank" rel="noopener noreferrer">
+                                DOI: {tweet.doi}
+                              </a>
+                            </div>
+                            <div className="date">{tweet.date}</div>
+                            <div className="journal">{tweet.journal}</div>
+                          </>
+                        )}
                       </div>
                       <div className="tweet-meta-row second-row">
-                        <div className="score">Score: {parseFloat(tweet.score).toFixed(2)}</div>
-                        <div className="cancer-type">{tweet.cancerType}</div>
+                        {tweet.journal?.toLowerCase() !== 'youtube' && (
+                          <>
+                            <div className="score">Score: {parseFloat(tweet.score).toFixed(2)}</div>
+                            <div className="cancer-type">{tweet.cancerType}</div>
+                          </>
+                        )}
                         {/* Removed tweetType label */}
                         <div className="tweet-actions">
                           <button 

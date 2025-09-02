@@ -12,6 +12,15 @@ const Changelog = () => {
 
   const changelog = [
     {
+      version: '2.4.5',
+      date: '2025-09-02',
+      changes: [
+        'Added Youtube Tweets',
+        'Added Global setting to use tags and people data or not in Phase 3',
+        'QOL improvements for accepting tweets'
+      ]
+    },
+    {
       version: '2.2.0',
       date: '2025-08-06',
       changes: [

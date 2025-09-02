@@ -591,6 +591,21 @@
   background-color: #5a6268;
 }
 
+.phase2-unaccept-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phase2-unaccept-button:hover {
+  background-color: #5a6268;
+}
+
 .phase2-content-selection {
   margin-top: 16px;
   padding: 12px;

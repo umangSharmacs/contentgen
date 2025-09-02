@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import './Phase2TweetReview.css';
 import TweetCard from './TweetCard';
+import YouTubeCard from './YouTubeCard';
 
 const Phase2TweetReview = ({ 
   tweets, 
   declinedTweets, 
   onDeclineTweet, 
   onUnDeclineTweet,
+  onAcceptTweet, // Add this prop
   selectedQuery,
   tweetContentSelections,
   onTweetContentSelection,
@@ -157,6 +159,70 @@ const Phase2TweetReview = ({
       newExpandedGroups[groupName] = expand;
     });
     setExpandedGroups(newExpandedGroups);
+  };
+
+  const handleEditTweet = (tweetData) => {
+    // Handle reset functionality for YouTube tweets
+    if (tweetData.reset && tweetData.pmid) {
+      // Reset the tweet status by removing it from declined tweets
+      handleUnDeclineTweet(tweetData.pmid);
+      return;
+    }
+    
+    // Handle unaccept functionality for YouTube tweets
+    if (tweetData.unaccept && tweetData.pmid) {
+      // Remove the tweet from content selections to "unaccept" it
+      onTweetContentSelection(tweetData.pmid, {
+        twitter: false,
+        clinicalNewsletter: false,
+        longFormNewsletter: false
+      }, 'finalTweet', {});
+      return;
+    }
+    
+    // This function is not directly used in Phase2TweetReview for editing,
+    // but it's passed down to the YouTubeCard for potential future use or
+    // if the workflow changes to allow editing here.
+    console.log('Edit tweet data:', tweetData);
+    // For now, we just log it.
+  };
+
+  const renderTweetCard = (tweet) => {
+    // Check if it's a YouTube tweet
+    if (tweet.journal && tweet.journal.toLowerCase() === 'youtube') {
+      return (
+        <YouTubeCard
+          key={tweet.pmid}
+          pmid={tweet.pmid}
+          date={tweet.date}
+          journal={tweet.journal}
+          tweet={tweet.tweet}
+          onAccept={onAcceptTweet} // Use the prop instead of handleAcceptTweet
+          onDecline={handleDeclineTweet}
+          onEdit={handleEditTweet}
+          isAccepted={tweetContentSelections[tweet.pmid]?.contentTypes && 
+            (tweetContentSelections[tweet.pmid].contentTypes.twitter || 
+             tweetContentSelections[tweet.pmid].contentTypes.clinicalNewsletter || 
+             tweetContentSelections[tweet.pmid].contentTypes.longFormNewsletter)}
+          isDeclined={declinedTweets.some(dt => dt.pmid === tweet.pmid)}
+        />
+      );
+    } else {
+      // Render regular research card
+      return (
+        <TweetCard
+          key={tweet.pmid}
+          tweet={tweet}
+          isDeclined={isTweetDeclined(tweet.pmid)}
+          onDeclineTweet={handleDeclineTweet}
+          onUnDeclineTweet={handleUnDeclineTweet}
+          onToggleContentSelection={toggleContentSelection}
+          showContentSelection={showContentSelection[tweet.pmid]}
+          tweetContentSelections={tweetContentSelections[tweet.pmid]}
+          onTweetContentSelection={handleTweetContentSelection}
+        />
+      );
+    }
   };
 
   return (
@@ -318,17 +384,7 @@ const Phase2TweetReview = ({
               <div className="group-content">
                 <div className="phase2-tweets-grid">
                   {groupTweets.map((tweet) => (
-                    <TweetCard
-                      key={tweet.pmid}
-                      tweet={tweet}
-                      isDeclined={isTweetDeclined(tweet.pmid)}
-                      onDeclineTweet={handleDeclineTweet}
-                      onUnDeclineTweet={handleUnDeclineTweet}
-                      onToggleContentSelection={toggleContentSelection}
-                      showContentSelection={showContentSelection[tweet.pmid]}
-                      tweetContentSelections={tweetContentSelections[tweet.pmid]}
-                      onTweetContentSelection={handleTweetContentSelection}
-                    />
+                    renderTweetCard(tweet)
                   ))}
                 </div>
               </div>

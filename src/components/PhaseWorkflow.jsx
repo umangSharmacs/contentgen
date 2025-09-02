@@ -3,6 +3,7 @@ import Phase1QuerySelection from './Phase1QuerySelection';
 import Phase2TweetReview from './Phase2TweetReview';
 import Phase3ContentSelection from './Phase3ContentSelection';
 import './PhaseWorkflow.css';
+import YouTubeCard from './YouTubeCard';
 
 const PhaseWorkflow = () => {
   const [currentPhase, setCurrentPhase] = useState(1);
@@ -93,18 +94,19 @@ const PhaseWorkflow = () => {
   useEffect(() => {
     if (selectedQuery && currentPhase >= 2) {
       setLoading(true);
-      // Filter by cancer type (for now, all tweets are cancer-related)
-      console.log('ContentGen: Filtering tweets - selectedQuery:', selectedQuery);
-      console.log('ContentGen: allResearchData:', allResearchData);
-      // TODO : ADD FILTERING LOGIC HERE
-      // const filteredTweets = allResearchData.filter(tweet =>
-      //   tweet.cancerType && (
-      //     tweet.cancerType.toLowerCase().includes(selectedQuery.toLowerCase()) ||
-      //     selectedQuery.toLowerCase() === 'cancer'
-      //   )
-      // );
       
-      setTweets(allResearchData);
+      // Separate YouTube content from research content
+      const youtubeTweets = allResearchData.filter(tweet => 
+        tweet.journal && tweet.journal.toLowerCase() === 'youtube'
+      );
+      
+      const researchTweets = allResearchData.filter(tweet => 
+        tweet.journal && tweet.journal.toLowerCase() !== 'youtube'
+      );
+      
+      // For now, show all tweets regardless of query
+      // You can add filtering logic here if needed
+      setTweets([...youtubeTweets, ...researchTweets]);
       setLoading(false);
     }
   }, [selectedQuery, currentPhase, allResearchData]);
@@ -170,6 +172,31 @@ const PhaseWorkflow = () => {
     setTweetContentSelections({});
     setShowContentSelection({});
   };
+
+  const handleAcceptTweet = (tweetData) => {
+    // For YouTube tweets, set up content selection for Twitter (no auto Phase 3 navigation)
+    if (tweetData.type === 'youtube' || tweetData.journal?.toLowerCase() === 'youtube') {
+      setTweetContentSelections(prev => ({
+        ...prev,
+        [tweetData.pmid]: {
+          contentTypes: {
+            twitter: true,
+            clinicalNewsletter: false,
+            longFormNewsletter: false
+          },
+          tweetType: 'finalTweet',
+          editedTweets: {
+            finalTweet: {
+              [tweetData.pmid]: tweetData.tweet
+            }
+          }
+        }
+      }));
+    }
+    // Note: No automatic navigation to Phase 3 - user navigates manually when ready
+  };
+
+
 
   if (loading) {
     return (
@@ -258,12 +285,12 @@ const PhaseWorkflow = () => {
         {currentPhase === 2 && (
           <Phase2TweetReview
             tweets={tweets}
-            declinedTweets={declinedTweets}
+            onAcceptTweet={handleAcceptTweet}
             onDeclineTweet={handleDeclineTweet}
             onUnDeclineTweet={handleUnDeclineTweet}
-            selectedQuery={selectedQuery}
-            tweetContentSelections={tweetContentSelections}
+            declinedTweets={declinedTweets}
             onTweetContentSelection={handleTweetContentSelection}
+            tweetContentSelections={tweetContentSelections}
             showContentSelection={showContentSelection}
             setShowContentSelection={setShowContentSelection}
           />
