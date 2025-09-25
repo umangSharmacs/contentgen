@@ -81,7 +81,8 @@ Create a webhook trigger in n8n to receive data from WordPress:
       "tweet": "Accepted tweet content...",
       "journal": "Nature Medicine",
       "date": "2024-01-15",
-      "cancer_type": "Hodgkin Lymphoma"
+      "type": "Hodgkin Lymphoma",
+      "query": "cancer"
     }
   ],
   "timestamp": "2024-01-15T10:30:00Z",

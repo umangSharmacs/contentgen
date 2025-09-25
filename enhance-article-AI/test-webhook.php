@@ -24,7 +24,7 @@ $response = wp_remote_post($n8n_webhook_url, array(
         'Content-Type' => 'application/json',
     ),
     'body' => json_encode($test_data),
-    'timeout' => 30,
+    'timeout' => 180,
 ));
 
 if (is_wp_error($response)) {

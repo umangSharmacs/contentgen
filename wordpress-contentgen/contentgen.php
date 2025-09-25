@@ -3,7 +3,7 @@
  * Plugin Name: ContentGen - Research Tweet Manager
  * Plugin URI: https://yourdomain.com/contentgen
  * Description: A WordPress plugin for managing research tweets and content generation from n8n workflows with bidirectional data flow
- * Version: 2.4.5
+ * Version: 3.1.0
  * Author: Umang Sharma
  * License: GPL v2 or later
  * Text Domain: contentgen
@@ -15,11 +15,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('CONTENTGEN_VERSION', '2.4.5');
+define('CONTENTGEN_VERSION', '3.1.0');
 define('CONTENTGEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CONTENTGEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('CONTENTGEN_CSS_FILE', 'index-1756844211824.css');
-define('CONTENTGEN_JS_FILE', 'index-1756844211783.js');
+define('CONTENTGEN_CSS_FILE', 'index-1758830237453.css');
+define('CONTENTGEN_JS_FILE', 'index-1758830237413.js');
 
 class ContentGen {
     
@@ -35,6 +35,8 @@ class ContentGen {
         // Data management
         add_action('wp_ajax_contentgen_get_research_data', array($this, 'get_research_data'));
         add_action('wp_ajax_nopriv_contentgen_get_research_data', array($this, 'get_research_data'));
+        add_action('wp_ajax_contentgen_get_queries', array($this, 'get_queries'));
+        add_action('wp_ajax_nopriv_contentgen_get_queries', array($this, 'get_queries'));
         add_action('wp_ajax_contentgen_export_tweets', array($this, 'export_tweets'));
         add_action('wp_ajax_nopriv_contentgen_export_tweets', array($this, 'export_tweets'));
         add_action('wp_ajax_contentgen_accept_tweet', array($this, 'accept_tweet'));
@@ -93,7 +95,8 @@ class ContentGen {
             tweet text,
             tweet_few_shot text,
             doi varchar(255),
-            cancer_type varchar(255),
+            type varchar(255),
+            query varchar(255),
             summary text,
             abstract longtext,
             twitter_hashtags text,
@@ -427,7 +430,8 @@ class ContentGen {
                 'tweet' => isset($data['tweet']) ? (string)$data['tweet'] : (isset($data['Tweet']) ? (string)$data['Tweet'] : ''),
                 'tweet_few_shot' => isset($data['tweetFewShot']) ? (string)$data['tweetFewShot'] : (isset($data['Tweet (Few shot learning)']) ? (string)$data['Tweet (Few shot learning)'] : (isset($data['Tweet Few Shot']) ? (string)$data['Tweet Few Shot'] : '')),
                 'doi' => isset($data['doi']) ? (string)$data['doi'] : (isset($data['DOI']) ? (string)$data['DOI'] : ''),
-                'cancer_type' => isset($data['cancerType']) ? (string)$data['cancerType'] : (isset($data['Cancer Type']) ? (string)$data['Cancer Type'] : (isset($data['Specific Cancer type']) ? (string)$data['Specific Cancer type'] : '')),
+                'type' => isset($data['type']) ? (string)$data['type'] : (isset($data['cancerType']) ? (string)$data['cancerType'] : (isset($data['Cancer Type']) ? (string)$data['Cancer Type'] : (isset($data['Specific Cancer type']) ? (string)$data['Specific Cancer type'] : ''))),
+                'query' => isset($data['query']) ? (string)$data['query'] : (isset($data['Query']) ? (string)$data['Query'] : ''),
                 'summary' => isset($data['summary']) ? (string)$data['summary'] : (isset($data['Summary']) ? (string)$data['Summary'] : ''),
                 'abstract' => isset($data['abstract']) ? (string)$data['abstract'] : (isset($data['Abstract']) ? (string)$data['Abstract'] : ''),
                 'twitter_hashtags' => isset($data['twitterHashtags']) ? (string)$data['twitterHashtags'] : (isset($data['Twitter Hashtags']) ? (string)$data['Twitter Hashtags'] : (isset($data['Twiter Hashtags']) ? (string)$data['Twiter Hashtags'] : '')),
@@ -471,22 +475,99 @@ class ContentGen {
         global $wpdb;
         $table_name = $wpdb->prefix . 'contentgen_research_data';
         
+        // Get query parameter if provided
+        $selected_query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : null;
+        
         error_log('ContentGen: Querying table: ' . $table_name);
+        error_log('ContentGen: Selected query filter: ' . ($selected_query ? $selected_query : 'none'));
         
-        $data = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $table_name WHERE status = %s ORDER BY created_at DESC",
-                'pending'
-            ),
-            ARRAY_A
-        );
+        if ($selected_query) {
+            // Filter by specific query, treating empty/null query values as 'cancer'
+            $data = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM $table_name 
+                     WHERE status = %s 
+                     AND (
+                         query = %s 
+                         OR (query IS NULL AND %s = 'cancer')
+                         OR (query = '' AND %s = 'cancer')
+                     )
+                     ORDER BY created_at DESC",
+                    'pending',
+                    $selected_query,
+                    $selected_query,
+                    $selected_query
+                ),
+                ARRAY_A
+            );
+        } else {
+            // No query filter - return all pending records
+            $data = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM $table_name WHERE status = %s ORDER BY created_at DESC",
+                    'pending'
+                ),
+                ARRAY_A
+            );
+        }
         
-        error_log('ContentGen: Found ' . count($data) . ' records');
+        error_log('ContentGen: Found ' . count($data) . ' records for query: ' . ($selected_query ? $selected_query : 'all'));
         error_log('ContentGen: Data: ' . json_encode($data));
         
         wp_send_json_success($data);
     }
     
+    public function get_queries() {
+        error_log('ContentGen: get_queries called');
+        
+        // Check if nonce is provided
+        if (!isset($_POST['nonce'])) {
+            error_log('ContentGen: ERROR - No nonce provided for get_queries');
+            wp_send_json_error('No nonce provided');
+            return;
+        }
+        
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'contentgen_nonce')) {
+            error_log('ContentGen: ERROR - Invalid nonce for get_queries');
+            wp_send_json_error('Invalid nonce');
+            return;
+        }
+        
+        error_log('ContentGen: get_queries nonce verified successfully');
+        
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'contentgen_research_data';
+        
+        error_log('ContentGen: Getting unique queries from table: ' . $table_name);
+        
+        // Get unique queries, treating empty/null values as 'cancer'
+        $queries = $wpdb->get_results(
+            "SELECT DISTINCT 
+                CASE 
+                    WHEN query IS NULL OR query = '' THEN 'cancer'
+                    ELSE query 
+                END as query_name
+            FROM $table_name 
+            ORDER BY query_name ASC",
+            ARRAY_A
+        );
+        
+        if ($wpdb->last_error) {
+            error_log('ContentGen: Database error in get_queries: ' . $wpdb->last_error);
+            wp_send_json_error('Database error: ' . $wpdb->last_error);
+            return;
+        }
+        
+        // Extract just the query names from the result
+        $unique_queries = array_map(function($row) {
+            return $row['query_name'];
+        }, $queries);
+        
+        error_log('ContentGen: Found unique queries: ' . json_encode($unique_queries));
+        
+        wp_send_json_success($unique_queries);
+    }
 
 
     public function export_tweets() {

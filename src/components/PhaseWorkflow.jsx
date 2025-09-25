@@ -18,83 +18,85 @@ const PhaseWorkflow = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch research data from WordPress on mount
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Function to load research data with optional query filter
+  const loadData = async (queryFilter = null) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('ContentGen: Starting data load with query:', queryFilter);
+      console.log('ContentGen: window.contentgen_ajax =', window.contentgen_ajax);
+      
+      if (window.contentgen_ajax && window.contentgen_ajax.ajax_url) {
+        console.log('ContentGen: WordPress environment detected, fetching data...');
         
-        console.log('ContentGen: Starting data load...');
-        console.log('ContentGen: window.contentgen_ajax =', window.contentgen_ajax);
+        const bodyParams = {
+          action: 'contentgen_get_research_data',
+          nonce: window.contentgen_ajax.nonce
+        };
         
-        if (window.contentgen_ajax && window.contentgen_ajax.ajax_url) {
-          console.log('ContentGen: WordPress environment detected, fetching data...');
+        // Add query filter if provided
+        if (queryFilter) {
+          bodyParams.query = queryFilter;
+        }
+        
+        const response = await fetch(window.contentgen_ajax.ajax_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(bodyParams)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('ContentGen: WordPress response:', result);
+        
+        if (result.success && result.data) {
+          console.log('ContentGen: Data loaded successfully, mapping fields...');
+          // Map backend fields to expected React props
+          const mapped = result.data.map(item => ({
+            pmid: item.pmid?.toString(),
+            date: item.date_added || item.date,
+            journal: item.journal,
+            title: item.title,
+            tweet: item.tweet,
+            "Tweet (Few shot learning)": item.tweet_few_shot || item.tweet,
+            doi: item.doi,
+            cancerType: item.type || item.cancer_type || item.cancerType, // Updated to use 'type' field
+            summary: item.summary,
+            abstract: item.abstract,
+            twitterHashtags: item.twitter_hashtags,
+            twitterAccounts: item.twitter_accounts,
+            score: item.score,
+            query: item.query // Add query field to the mapping
+          }));
           
-          const response = await fetch(window.contentgen_ajax.ajax_url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              action: 'contentgen_get_research_data',
-              nonce: window.contentgen_ajax.nonce
-            })
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const result = await response.json();
-          console.log('ContentGen: WordPress response:', result);
-          
-          if (result.success && result.data) {
-            console.log('ContentGen: Data loaded successfully, mapping fields...');
-            // Map backend fields to expected React props
-            const mapped = result.data.map(item => ({
-              pmid: item.pmid?.toString(),
-              date: item.date_added || item.date,
-              journal: item.journal,
-              title: item.title,
-              tweet: item.tweet,
-              "Tweet (Few shot learning)": item.tweet_few_shot || item.tweet,
-              doi: item.doi,
-              cancerType: item.cancer_type || item.cancerType,
-              summary: item.summary,
-              abstract: item.abstract,
-              twitterHashtags: item.twitter_hashtags,
-              twitterAccounts: item.twitter_accounts,
-              score: item.score
-            }));
-            
-            console.log('ContentGen: Mapped data:', mapped);
-            setAllResearchData(mapped);
-          } else {
-            console.log('ContentGen: No data returned from WordPress');
-            setAllResearchData([]);
-          }
+          console.log('ContentGen: Mapped data:', mapped);
+          setAllResearchData(mapped);
         } else {
-          console.log('ContentGen: No WordPress environment detected');
+          console.log('ContentGen: No data returned from WordPress');
           setAllResearchData([]);
         }
-      } catch (error) {
-        console.error('ContentGen: Error loading data:', error);
-        setError(`Failed to load data: ${error.message}`);
+      } else {
+        console.log('ContentGen: No WordPress environment detected');
         setAllResearchData([]);
-      } finally {
-        setLoading(false);
       }
-    };
-    
-    loadData();
-  }, []);
+    } catch (error) {
+      console.error('ContentGen: Error loading data:', error);
+      setError(`Failed to load data: ${error.message}`);
+      setAllResearchData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Filter tweets for the selected query
+  // Set tweets when research data is loaded
   useEffect(() => {
-    if (selectedQuery && currentPhase >= 2) {
-      setLoading(true);
-      
+    if (allResearchData && allResearchData.length > 0) {
       // Separate YouTube content from research content
       const youtubeTweets = allResearchData.filter(tweet => 
         tweet.journal && tweet.journal.toLowerCase() === 'youtube'
@@ -104,17 +106,16 @@ const PhaseWorkflow = () => {
         tweet.journal && tweet.journal.toLowerCase() !== 'youtube'
       );
       
-      // For now, show all tweets regardless of query
-      // You can add filtering logic here if needed
+      // Set tweets from the filtered data (already filtered by query on backend)
       setTweets([...youtubeTweets, ...researchTweets]);
-      setLoading(false);
     }
-  }, [selectedQuery, currentPhase, allResearchData]);
+  }, [allResearchData]);
 
-  const handleQuerySelection = (query) => {
+  const handleQuerySelection = async (query) => {
     setSelectedQuery(query);
     setCurrentPhase(2);
-    // Don't clear state here - preserve content selections between phases
+    // Load research data filtered by the selected query
+    await loadData(query);
   };
 
   const handleDeclineTweet = (pmid) => {
