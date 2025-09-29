@@ -423,6 +423,90 @@
   border: 1px dashed #dee2e6;
 }
 
+/* Simplified Day View Styles */
+.day-view-header {
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  text-align: center;
+}
+
+.day-view-header h3 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+}
+
+.day-view-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.day-debug {
+  font-size: 0.8rem;
+  color: #dc3545;
+  margin-top: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.day-simple-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.day-tweet-item {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.day-tweet-item:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.day-tweet-time {
+  font-weight: 600;
+  color: #007bff;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.day-tweet-content {
+  color: #495057;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.day-tweet-status {
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.no-tweets-day {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px dashed #dee2e6;
+}
+
 /* Tweet Detail Modal */
 .tweet-detail-overlay {
   position: fixed;
@@ -898,5 +982,25 @@
   .tweet-meta {
     flex-direction: column;
     gap: 4px;
+  }
+  
+  .day-view-header {
+    padding: 16px;
+  }
+  
+  .day-simple-list {
+    padding: 16px;
+  }
+  
+  .day-tweet-item {
+    padding: 12px;
+  }
+  
+  .day-tweet-time {
+    font-size: 0.9rem;
+  }
+  
+  .day-tweet-content {
+    font-size: 0.85rem;
   }
 }

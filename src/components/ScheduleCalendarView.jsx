@@ -164,9 +164,15 @@ const ScheduleCalendarView = ({ onClose }) => {
   };
 
   const switchToDayView = (day = null) => {
+    console.log('switchToDayView called with:', day);
     setViewMode('day');
     if (day) {
+      console.log('Setting selectedDay to provided day:', day.toDateString());
       setSelectedDay(day);
+    } else {
+      const today = new Date();
+      console.log('No day provided, setting selectedDay to today:', today.toDateString());
+      setSelectedDay(today);
     }
   };
 
@@ -176,32 +182,6 @@ const ScheduleCalendarView = ({ onClose }) => {
     setSelectedDay(newDay);
   };
 
-  const getHoursForDay = () => {
-    const hours = [];
-    for (let hour = 0; hour < 24; hour++) {
-      hours.push(hour);
-    }
-    return hours;
-  };
-
-  const getTweetsForHour = (hour) => {
-    const filteredTweets = getFilteredTweets();
-    return filteredTweets.filter(tweet => {
-      const tweetDate = new Date(tweet.scheduled_datetime);
-      return (
-        tweetDate.getDate() === selectedDay.getDate() &&
-        tweetDate.getMonth() === selectedDay.getMonth() &&
-        tweetDate.getFullYear() === selectedDay.getFullYear() &&
-        tweetDate.getHours() === hour
-      );
-    });
-  };
-
-  const formatHour = (hour) => {
-    const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-    return `${displayHour}:00 ${period}`;
-  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -341,7 +321,6 @@ const ScheduleCalendarView = ({ onClose }) => {
     );
   }
 
-  const days = getDaysInMonth(currentDate);
   const filteredTweets = getFilteredTweets();
 
   return (
@@ -449,7 +428,7 @@ const ScheduleCalendarView = ({ onClose }) => {
             </div>
             
             <div className="days-grid">
-              {days.map((day, index) => {
+              {getDaysInMonth(currentDate).map((day, index) => {
                 const tweetsForDay = day ? getTweetsForDate(day) : [];
                 const isToday = day && 
                   day.getDate() === new Date().getDate() &&
@@ -497,49 +476,54 @@ const ScheduleCalendarView = ({ onClose }) => {
           </div>
         ) : (
           <div className="day-view">
-            <div className="day-grid">
-              {getHoursForDay().map(hour => {
-                const tweetsForHour = getTweetsForHour(hour);
-                return (
-                  <div key={hour} className="hour-slot">
-                    <div className="hour-label">
-                      {formatHour(hour)}
+            <div className="day-view-header">
+              <h3>Daily View</h3>
+              <p>
+                Viewing: {selectedDay ? selectedDay.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }) : 'Loading...'}
+              </p>
+              <div className="day-debug">
+                Debug: selectedDay = {selectedDay ? 'exists' : 'null'}, viewMode = {viewMode}
+              </div>
+            </div>
+            <div className="day-simple-list">
+              {filteredTweets.length > 0 ? (
+                filteredTweets
+                  .filter(tweet => {
+                    if (!selectedDay) return false;
+                    const tweetDate = new Date(tweet.scheduled_datetime);
+                    return (
+                      tweetDate.getDate() === selectedDay.getDate() &&
+                      tweetDate.getMonth() === selectedDay.getMonth() &&
+                      tweetDate.getFullYear() === selectedDay.getFullYear()
+                    );
+                  })
+                  .map(tweet => (
+                    <div 
+                      key={tweet.id}
+                      className="day-tweet-item"
+                      onClick={() => setSelectedTweet(tweet)}
+                    >
+                      <div className="day-tweet-time">
+                        {formatTime(tweet.scheduled_datetime)}
+                      </div>
+                      <div className="day-tweet-content">
+                        {truncateContent(tweet.tweet_content, 100)}
+                      </div>
+                      <div className="day-tweet-status" style={{ color: getStatusColor(tweet.status) }}>
+                        {tweet.status}
+                      </div>
                     </div>
-                    <div className="hour-content">
-                      {tweetsForHour.map(tweet => (
-                        <div 
-                          key={tweet.id}
-                          className="tweet-item"
-                          style={{ borderLeft: `4px solid ${getStatusColor(tweet.status)}` }}
-                          onClick={() => setSelectedTweet(tweet)}
-                        >
-                          <div className="tweet-time">
-                            {formatTime(tweet.scheduled_datetime)}
-                          </div>
-                          <div className="tweet-preview">
-                            {truncateContent(tweet.tweet_content, 120)}
-                          </div>
-                          <div className="tweet-meta">
-                            <span className="tweet-pmid">PMID: {tweet.pmid}</span>
-                            <span className="tweet-query">{tweet.query}</span>
-                            <span 
-                              className="tweet-status"
-                              style={{ color: getStatusColor(tweet.status) }}
-                            >
-                              {tweet.status}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                      {tweetsForHour.length === 0 && (
-                        <div className="no-tweets">
-                          No tweets scheduled
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  ))
+              ) : (
+                <div className="no-tweets-day">
+                  No tweets scheduled for this day
+                </div>
+              )}
             </div>
           </div>
         )}
