@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Phase3ContentSelection.css';
-import SendConfirmationModal from './SendConfirmationModal';
 import SendSuccessModal from './SendSuccessModal';
+import ScheduleCalendarView from './ScheduleCalendarView';
 
 const Phase3ContentSelection = ({ 
   tweets, 
@@ -22,10 +22,10 @@ const Phase3ContentSelection = ({
   });
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState(null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [includeTags, setIncludeTags] = useState(true);
   const [includePeople, setIncludePeople] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Filter tweets based on content selections
   const getSelectedTweets = (contentType) => {
@@ -72,11 +72,15 @@ const Phase3ContentSelection = ({
     // Sort times and assign to tweets
     times.sort((a, b) => a - b);
     tweets.forEach((tweet, index) => {
+      const today = new Date();
+      // Ensure we're working with today's date in local timezone
+      today.setHours(0, 0, 0, 0); // Set to start of day
+      
       schedules[tweet.pmid] = {
         time: times[index],
         originalTime: times[index],
-        date: new Date(),
-        originalDate: new Date()
+        date: today,
+        originalDate: new Date(today)
       };
     });
     
@@ -349,26 +353,113 @@ const Phase3ContentSelection = ({
   };
 
   // --- MODAL SEND HANDLERS ---
-  const handleSendClick = () => {
-    setShowConfirmation(true);
+  const handleSendClick = async () => {
+    await handleScheduleAndSend();
   };
 
-  const handleConfirmSend = async () => {
-    setShowConfirmation(false);
-    const wasSuccess = await handleSendData();
-    if (wasSuccess) setShowSuccess(true);
-  };
+  const handleConfirmSend = async () => {};
 
   const handleCloseSuccess = () => {
     setShowSuccess(false);
   };
 
-  // --- MODIFIED handleSendData: returns true if success, false if error ---
-  const handleSendData = async () => {
-    setIsSending(true);
-    // setSendStatus(null); // Remove this line
+  const handleSchedulerConfirm = async () => {};
 
-    // Collect all accepted PMIDs (from all content types)
+  const handleScheduleTweets = async (scheduledTweets) => {
+    setIsSending(true);
+    
+    try {
+      if (window.contentgen_ajax && window.contentgen_ajax.ajax_url) {
+        const response = await fetch(window.contentgen_ajax.ajax_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'contentgen_schedule_tweets',
+            nonce: window.contentgen_ajax.nonce,
+            tweets_data: JSON.stringify(scheduledTweets)
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.success) {
+          setSendStatus('scheduled');
+          setShowSuccess(true);
+          console.log('ContentGen: Tweets scheduled successfully:', result);
+        } else {
+          setSendStatus('error');
+          console.error('ContentGen: Failed to schedule tweets:', result);
+        }
+      } else {
+        console.log('ContentGen: No WordPress environment, logging scheduled tweets');
+        console.log('Scheduled tweets:', scheduledTweets);
+        setSendStatus('scheduled');
+        setShowSuccess(true);
+      }
+    } catch (error) {
+      console.error('ContentGen: Error scheduling tweets:', error);
+      setSendStatus('error');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Build scheduled tweets from current Phase 3 schedules
+  const buildScheduledTweetsFromSchedules = () => {
+    const items = [];
+    twitterTweets.forEach(tweet => {
+      const schedule = tweetSchedules[tweet.pmid];
+      if (!schedule || schedule.time === undefined || !schedule.date) return;
+      const scheduledDateTime = new Date(schedule.date);
+      const hours = Math.floor(schedule.time);
+      const minutes = Math.round((schedule.time - hours) * 60);
+      scheduledDateTime.setHours(hours, minutes, 0, 0);
+      // Build final tweet with footer (DOI, tags, mentions) honoring global checkboxes
+      const baseTweet = getTweetContent(tweet, tweetContentSelections[tweet.pmid]);
+      const doi = tweet.doi ? `https://doi.org/${tweet.doi}` : '';
+      const footerParts = [];
+      if (doi) footerParts.push(`Source: ${doi}`);
+      if (includeTags && tweet.twitterHashtags) footerParts.push(tweet.twitterHashtags);
+      if (includePeople && tweet.twitterAccounts) footerParts.push(tweet.twitterAccounts);
+      const footer = footerParts.length ? `\n${footerParts.join('\n')}` : '';
+      const finalTweetWithFooter = `${baseTweet || ''}${footer}`;
+
+      items.push({
+        pmid: tweet.pmid,
+        query: selectedQuery,
+        tweet_content: finalTweetWithFooter,
+        scheduled_datetime: formatDateTimeForWordPress(scheduledDateTime),
+        timezone_offset_minutes: scheduledDateTime.getTimezoneOffset(),
+        tweet_data: {
+          ...tweet,
+          scheduled_time: scheduledDateTime.toISOString(),
+          query: selectedQuery
+        }
+      });
+    });
+    return items;
+  };
+
+  const formatDateTimeForWordPress = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  // Send only non-Twitter content to n8n (clinical + longform)
+  const sendContentToN8n = async () => {
+    setIsSending(true);
+    // Collect accepted/declined PMIDs (all types)
     const acceptedPmids = [];
     
     // Add Twitter tweets
@@ -398,29 +489,6 @@ const Phase3ContentSelection = ({
     const dataToSend = {
       query: selectedQuery,
       timestamp: new Date().toISOString(),
-      twitter: {
-        tags: includeTags,
-        people: includePeople,
-        tweets: twitterTweets.map(tweet => {
-          const tweetSelection = tweetContentSelections[tweet.pmid];
-          const finalTweet = getTweetContent(tweet, tweetSelection);
-          const schedule = tweetSchedules[tweet.pmid];
-          
-          return {
-            pmid: tweet.pmid,
-            doi: tweet.doi,
-            journal: tweet.journal,
-            date: tweet.date,
-            cancerType: tweet.cancerType,
-            score: tweet.score,
-            finalTweet: finalTweet,
-            scheduledTime: schedule ? formatTime(schedule.time) : null,
-            scheduledDate: schedule ? formatDate(schedule.date) : null,
-            tags: tweet.twitterHashtags,
-            mentions: tweet.twitterAccounts
-          };
-        })
-      },
       clinicalNewsletter: {
         tweets: clinicalNewsletterTweets.map(tweet => {
           const tweetSelection = tweetContentSelections[tweet.pmid];
@@ -462,8 +530,8 @@ const Phase3ContentSelection = ({
         })
       },
       stats: {
-        totalSelected: twitterTweets.length + clinicalNewsletterTweets.length + longFormNewsletterTweets.length,
-        twitterCount: twitterTweets.length,
+        totalSelected: clinicalNewsletterTweets.length + longFormNewsletterTweets.length,
+        twitterCount: 0,
         clinicalNewsletterCount: clinicalNewsletterTweets.length,
         longFormNewsletterCount: longFormNewsletterTweets.length,
         declinedCount: declinedTweets.length
@@ -526,11 +594,47 @@ const Phase3ContentSelection = ({
     return success;
   };
 
+  // Orchestrator: always schedule tweets, then send content immediately
+  const handleScheduleAndSend = async () => {
+    try {
+      setIsSending(true);
+      // Build schedules from Phase 3 state and schedule them in WP
+      const scheduledTweets = buildScheduledTweetsFromSchedules();
+      if (scheduledTweets.length > 0) {
+        await handleScheduleTweets(scheduledTweets);
+      }
+      // Send only clinical + longform content to n8n
+      const contentSent = await sendContentToN8n();
+      if (contentSent) {
+        setSendStatus('success');
+        setShowSuccess(true);
+      } else {
+        setSendStatus('error');
+      }
+    } catch (e) {
+      console.error('ContentGen: Error scheduling/sending:', e);
+      setSendStatus('error');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="phase3-container">
       <div className="phase3-header">
-        <h2>Review Selected Content for "{selectedQuery}"</h2>
-        <p>Review and manage your selected content across different platforms.</p>
+        <div className="phase3-header-content">
+          <div className="phase3-title-section">
+            <h2>Review Selected Content for "{selectedQuery}"</h2>
+            <p>Review and manage your selected content across different platforms.</p>
+          </div>
+          <button 
+            className="calendar-button" 
+            onClick={() => setShowCalendar(true)}
+            title="View scheduled tweets calendar"
+          >
+            View Calendar
+          </button>
+        </div>
       </div>
 
       <div className="content-sections">
@@ -935,17 +1039,17 @@ const Phase3ContentSelection = ({
           {!sendStatus && 'This will send all selected content to your n8n workflow.'}
         </p>
       </div>
-      <SendConfirmationModal
-        open={showConfirmation}
-        onClose={() => setShowConfirmation(false)}
-        onConfirm={handleConfirmSend}
-        counts={counts}
-      />
+      
       <SendSuccessModal
         open={showSuccess}
         onClose={handleCloseSuccess}
-        message="Your data has been sent to n8n."
+        message={sendStatus === 'scheduled' ? 'Your tweets have been scheduled successfully!' : 'Your data has been sent to n8n.'}
       />
+      
+      {/* Calendar Modal */}
+      {showCalendar && (
+        <ScheduleCalendarView onClose={() => setShowCalendar(false)} />
+      )}
     </div>
   );
 };

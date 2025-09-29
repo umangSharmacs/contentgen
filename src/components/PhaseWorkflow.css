@@ -9,6 +9,7 @@
   margin-bottom: 30px;
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 20px;
+  position: relative;
 }
 
 .workflow-header h1 {
@@ -70,10 +71,36 @@
   color: #333;
 }
 
-.restart-button {
+.header-actions {
   position: absolute;
   top: 20px;
   right: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.calendar-button {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.calendar-button:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.restart-button {
   background: none;
   border: 1px solid #ddd;
   padding: 8px 16px;
@@ -186,4 +213,31 @@
   background-color: transparent;
   border-color: #ddd;
   color: #666;
+}
+
+/* Responsive Design for Header Actions */
+@media (max-width: 768px) {
+  .header-actions {
+    position: static;
+    margin-top: 16px;
+    justify-content: center;
+  }
+  
+  .workflow-header {
+    text-align: center;
+  }
+  
+  .phase-indicator {
+    gap: 20px;
+  }
+  
+  .phase-step {
+    font-size: 0.875rem;
+  }
+  
+  .phase-number {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
 } 

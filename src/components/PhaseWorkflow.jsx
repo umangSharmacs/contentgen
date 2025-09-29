@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Phase1QuerySelection from './Phase1QuerySelection';
 import Phase2TweetReview from './Phase2TweetReview';
 import Phase3ContentSelection from './Phase3ContentSelection';
+import ScheduleCalendarView from './ScheduleCalendarView';
 import './PhaseWorkflow.css';
 import YouTubeCard from './YouTubeCard';
 
@@ -17,6 +18,7 @@ const PhaseWorkflow = () => {
   const [showContentSelection, setShowContentSelection] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Function to load research data with optional query filter
   const loadData = async (queryFilter = null) => {
@@ -249,11 +251,20 @@ const PhaseWorkflow = () => {
             <span className="phase-label">Content Selection</span>
           </div>
         </div>
-        {currentPhase > 1 && (
-          <button className="restart-button" onClick={handleRestart}>
-            Restart
+        <div className="header-actions">
+          <button 
+            className="calendar-button" 
+            onClick={() => setShowCalendar(true)}
+            title="View scheduled tweets calendar"
+          >
+            View Calendar
           </button>
-        )}
+          {currentPhase > 1 && (
+            <button className="restart-button" onClick={handleRestart}>
+              Restart
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="workflow-content">
@@ -331,6 +342,11 @@ const PhaseWorkflow = () => {
           </div>
         )}
       </div>
+
+      {/* Calendar Modal */}
+      {showCalendar && (
+        <ScheduleCalendarView onClose={() => setShowCalendar(false)} />
+      )}
     </div>
   );
 };
