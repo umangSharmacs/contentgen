@@ -46,11 +46,31 @@ const ScheduleCalendarView = ({ onClose }) => {
         const result = await response.json();
         
         if (result.success) {
-          const tweets = result.data.map(tweet => ({
-            ...tweet,
-            scheduled_datetime: new Date(tweet.scheduled_datetime + 'Z'), // Treat as UTC
-            created_at: new Date(tweet.created_at)
-          }));
+          const tweets = result.data.map(tweet => {
+            // Parse the UTC datetime string properly
+            // Database stores as "2024-01-15 14:30:00" in UTC (no timezone info)
+            let utcDate;
+            
+            if (typeof tweet.scheduled_datetime === 'string') {
+              // Convert MySQL datetime format to ISO format and treat as UTC
+              const isoString = tweet.scheduled_datetime.replace(' ', 'T') + 'Z';
+              utcDate = new Date(isoString);
+            } else {
+              // Already a Date object
+              utcDate = new Date(tweet.scheduled_datetime);
+            }
+            
+            console.log(`ContentGen Calendar: Original DB time: ${tweet.scheduled_datetime} (UTC)`);
+            console.log(`ContentGen Calendar: Parsed UTC: ${utcDate.toISOString()}`);
+            console.log(`ContentGen Calendar: Local time: ${utcDate.toLocaleString()}`);
+            console.log(`ContentGen Calendar: Local time formatted: ${utcDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}`);
+            
+            return {
+              ...tweet,
+              scheduled_datetime: utcDate,
+              created_at: new Date(tweet.created_at)
+            };
+          });
           setScheduledTweets(tweets);
         } else {
           setError('Failed to load scheduled tweets: ' + result.data);
@@ -124,7 +144,7 @@ const ScheduleCalendarView = ({ onClose }) => {
     if (!date) return [];
     const filteredTweets = getFilteredTweets();
     return filteredTweets.filter(tweet => {
-      const tweetDate = new Date(tweet.scheduled_datetime);
+      const tweetDate = tweet.scheduled_datetime; // Already a Date object
       return (
         tweetDate.getDate() === date.getDate() &&
         tweetDate.getMonth() === date.getMonth() &&
@@ -134,10 +154,15 @@ const ScheduleCalendarView = ({ onClose }) => {
   };
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', {
+    // Date object is already parsed as UTC, toLocaleTimeString will convert to user's timezone
+    const formatted = date.toLocaleTimeString('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZoneName: 'short'
     });
+    
+    console.log(`ContentGen formatTime: UTC time ${date.toISOString()} -> Local display: ${formatted}`);
+    return formatted;
   };
 
   const formatDate = (date) => {
@@ -210,13 +235,12 @@ const ScheduleCalendarView = ({ onClose }) => {
   };
 
   const formatDateTimeForEdit = (date) => {
-    // Format for datetime-local input
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
+    // Format for datetime-local input (UTC date object will be displayed in local time)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
@@ -327,7 +351,18 @@ const ScheduleCalendarView = ({ onClose }) => {
     <div className="schedule-calendar-overlay" onClick={onClose}>
       <div className="schedule-calendar-modal" onClick={e => e.stopPropagation()}>
         <div className="calendar-header">
-          <h2>Scheduled Tweets Calendar</h2>
+          <div className="calendar-title-section">
+            <h2>Scheduled Tweets Calendar</h2>
+            <div className="timezone-indicator">
+              Times shown in: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+              {scheduledTweets.length > 0 && (
+                <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '4px' }}>
+                  Debug: First tweet UTC: {scheduledTweets[0].scheduled_datetime.toISOString()} → 
+                  Local: {scheduledTweets[0].scheduled_datetime.toLocaleString()}
+                </div>
+              )}
+            </div>
+          </div>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
         
@@ -495,7 +530,7 @@ const ScheduleCalendarView = ({ onClose }) => {
                 filteredTweets
                   .filter(tweet => {
                     if (!selectedDay) return false;
-                    const tweetDate = new Date(tweet.scheduled_datetime);
+                    const tweetDate = tweet.scheduled_datetime; // Already a Date object
                     return (
                       tweetDate.getDate() === selectedDay.getDate() &&
                       tweetDate.getMonth() === selectedDay.getMonth() &&
@@ -631,7 +666,7 @@ const ScheduleCalendarView = ({ onClose }) => {
                       className="datetime-input"
                     />
                     <div className="datetime-info">
-                      Local timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                      Times are displayed in your local timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
                     </div>
                   </div>
 

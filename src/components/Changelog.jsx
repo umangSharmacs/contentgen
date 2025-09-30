@@ -12,6 +12,14 @@ const Changelog = () => {
 
   const changelog = [
     {
+      version: '4.1.0',
+      date: '2025-09-30',
+      changes: [
+        'Added Automation of Query fetching',
+        'Added calendar view for scheduling tweets',
+      ]
+    },
+    {
       version: '2.4.5',
       date: '2025-09-02',
       changes: [
